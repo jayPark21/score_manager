@@ -1,0 +1,4 @@
+tesseract-ocr
+tesseract-ocr-kor
+libtesseract-dev
+libgl1-mesa-glx
