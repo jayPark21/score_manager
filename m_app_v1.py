@@ -377,8 +377,12 @@ def update_player_records(players_data, tournament_info):
         if records[name]["total_scores"]:
             records[name]["average_score"] = round(sum(records[name]["total_scores"]) / len(records[name]["total_scores"]), 1)
             
-        # 핸디캡 계산 (평균 스코어 - 72)
-        records[name]["handicap"] = round(records[name]["average_score"] - 72, 1)
+        # 핸디캡 계산 (평균 스코어 100 이하는 평균스코어, 100 이상은 100)
+        avg_score = round(records[name]["average_score"], 1)
+        if avg_score < 100:
+            records[name]["handicap"] = avg_score
+        else:
+            records[name]["handicap"] = 100
         
     # 업데이트된 기록 저장
     success = save_player_records(records)
@@ -1703,14 +1707,6 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
                     key=f"back_nine_{i}"
                 )
                 
-            # with col4:
-            #     handicap = st.number_input(
-            #         f"핸디캡", 
-            #         value=int(default_handicap), 
-            #         min_value=-30,  # 핸디캡이 음수일 수 있음
-            #         max_value=36, 
-            #         key=f"handicap_split_{i}"
-            #     )
             final_score = front_nine + back_nine
             # net_score = final_score - handicap
             
@@ -1718,9 +1714,7 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
                 '이름': name,
                 '전반': front_nine,
                 '후반': back_nine,
-                '최종스코어': final_score,
-                # '핸디캡': handicap,
-                # '네트점수': net_score
+                '최종스코어': final_score
             })
         
     # 현재 선수 명단 저장 옵션
@@ -1772,7 +1766,10 @@ def display_player_records():
         records_data = []
         for name, data in records.items():
             avg_score = round(data.get("average_score", 0), 1)
-            handicap = round(data.get("handicap", 0), 1)
+            if avg_score < 100:
+                handicap = avg_score
+            else:
+                handicap = 100
             tournament_count = len(data.get("tournaments", {}))
             
             records_data.append({
