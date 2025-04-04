@@ -27,14 +27,14 @@ st.set_page_config(
 st.title("HUGA Golf Manager")
 st.write("한양대학교 92 도시공학과 골프동호회(HUGA) 골프스코어 관리 프로그램")
 
-# 인라인 SVG 아이콘을 사용한 앱 아이콘 설정
-icon_svg = """
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-    <rect width="100" height="100" rx="20" fill="#4682b4"/>
-    <text x="50" y="75" font-size="60" text-anchor="middle" fill="white">🏌️</text>
-</svg>
-"""
-icon_b64 = base64.b64encode(icon_svg.encode("utf-8")).decode("utf-8")
+# # 인라인 SVG 아이콘을 사용한 앱 아이콘 설정
+# icon_svg = """
+# <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+#     <rect width="100" height="100" rx="20" fill="#4682b4"/>
+#     <text x="50" y="75" font-size="60" text-anchor="middle" fill="white">🏌️</text>
+# </svg>
+# """
+# icon_b64 = base64.b64encode(icon_svg.encode("utf-8")).decode("utf-8")
 
 # 모바일 웹 앱 메타데이터 추가
 st.markdown("""
