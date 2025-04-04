@@ -30,17 +30,17 @@ if platform.system() == 'Windows':
 elif platform.system() == 'Linux':
     pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
 
-st.write("Tesseract 버전:")
-result = subprocess.run(['tesseract', '--version'], capture_output=True, text=True)
-st.code(result.stdout)
+# st.write("Tesseract 버전:")
+# result = subprocess.run(['tesseract', '--version'], capture_output=True, text=True)
+# st.code(result.stdout)
 
-st.write("Tesseract 언어 파일:")
-result = subprocess.run(['ls -la /usr/share/tesseract-ocr/4.00/tessdata/'], shell=True, capture_output=True, text=True)
-st.code(result.stdout)
+# st.write("Tesseract 언어 파일:")
+# result = subprocess.run(['ls -la /usr/share/tesseract-ocr/4.00/tessdata/'], shell=True, capture_output=True, text=True)
+# st.code(result.stdout)
 
-st.write("설치된 패키지:")
-result = subprocess.run(['apt list --installed | grep tesseract'], shell=True, capture_output=True, text=True)
-st.code(result.stdout)
+# st.write("설치된 패키지:")
+# result = subprocess.run(['apt list --installed | grep tesseract'], shell=True, capture_output=True, text=True)
+# st.code(result.stdout)
 
 # 파일 경로 설정 - 클라우드 환경 고려
 base_dir = os.path.dirname(os.path.abspath(__file__)) if '__file__' in globals() else os.getcwd()
