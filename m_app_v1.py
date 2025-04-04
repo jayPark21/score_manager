@@ -2018,7 +2018,7 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
         border-radius: 5px;
     }
     .winner-box {
-        background-color: #f8f9d2;
+        background-color: #121212;
         border: 2px solid #e6d72a;
         border-radius: 10px;
         padding: 15px;
@@ -2086,10 +2086,10 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
                 net_score = round(float(final_score - handicap), 1)
             
             table_data.append({
-                '순위': rank,
+                '순  위': rank,
                 '선수명': name,
-                '최종스코어': final_score,
-                '평균': avg_score,
+                '종스코어': final_score,
+                '평  균': avg_score,
                 '핸디캡': handicap,
                 '네트점수': net_score
             })
@@ -2102,9 +2102,9 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
         st.dataframe(
             df,
             column_config={
-                '순위': st.column_config.NumberColumn(format="%d"),
-                '최종스코어': st.column_config.NumberColumn(format="%d"),
-                '평균': st.column_config.NumberColumn(format="%.1f"),
+                '순  위': st.column_config.NumberColumn(format="%d"),
+                '종스코어': st.column_config.NumberColumn(format="%d"),
+                '평  균': st.column_config.NumberColumn(format="%.1f"),
                 '핸디캡': st.column_config.NumberColumn(format="%.1f"),
                 '네트점수': st.column_config.NumberColumn(format="%.1f")
             },
