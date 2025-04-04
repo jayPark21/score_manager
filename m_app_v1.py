@@ -1743,7 +1743,7 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
         
             # 파일에 저장
             save_players_to_file(players_to_save)
-            st.success(f"선수 명단 {len(players_to_save)}명이 저장되었습니다.")
+            # st.success(f"선수 명단 {len(players_to_save)}명이 저장되었습니다.")
         
         return player_data, tournament_date
     
