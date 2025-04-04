@@ -2375,35 +2375,35 @@ def main():
     init_session_state()
      
     # CSS 스타일링 정의 - 테두리 강화
-    st.markdown("""
-    <style>
-        .big-font {
-            font-size: 24px !important;
-            font-weight: bold;
-        }
-        .menu-container {
-            background-color: #f0f2f6;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 2px solid #aaa !important;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        .content-section {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-        }
-        /* 라디오 버튼을 더 크게 표시 */
-        .stRadio > div {
-            margin-top: 10px;
-        }
-        .stRadio label {
-            font-size: 18px !important;
-            font-weight: 500;
-        }
-    </style>
-    """, unsafe_allow_html=True)
+    # st.markdown("""
+    # <style>
+    #     .big-font {
+    #         font-size: 24px !important;
+    #         font-weight: bold;
+    #     }
+    #     .menu-container {
+    #         background-color: #f0f2f6;
+    #         padding: 15px;
+    #         border-radius: 10px;
+    #         margin-bottom: 20px;
+    #         border: 2px solid #aaa !important;
+    #         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    #     }
+    #     .content-section {
+    #         margin-top: 30px;
+    #         padding-top: 20px;
+    #         border-top: 1px solid #eee;
+    #     }
+    #     /* 라디오 버튼을 더 크게 표시 */
+    #     .stRadio > div {
+    #         margin-top: 10px;
+    #     }
+    #     .stRadio label {
+    #         font-size: 18px !important;
+    #         font-weight: 500;
+    #     }
+    # </style>
+    # """, unsafe_allow_html=True)
 
     # 메뉴 선택 컨테이너
     with st.container():
