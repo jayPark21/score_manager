@@ -24,8 +24,8 @@ st.set_page_config(
     initial_sidebar_state="collapsed"  # 모바일에서는 사이드바 초기 상태를 접힌 상태로 설정
 )
 
-st.title("HUGA 골프스코어 매니저 v1.0")
-st.write("한글 이름과 스코어를 자동으로 인식하여 골프스코어를 계산합니다")
+st.title("HUGA Golf Manager")
+st.write("이름과 스코어를 자동/수동으로 인식하여 골프스코어를 계산합니다")
 
 
 # 모바일 웹 앱 메타데이터 추가
