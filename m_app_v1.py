@@ -1598,7 +1598,7 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
     # 입력 모드 선택
     input_mode = st.radio(
         "입력 방식 선택",
-        ["전체 스코어만 입력", "전반/후반 분리 입력"],
+        ["총 스코어 입력", "전반/후반 분리 입력"],
         horizontal=True,
         key="input_mode_radio"
     )
@@ -1607,7 +1607,7 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
     player_data = []
         
     # 컬럼 구성
-    if input_mode == "총 스코어만 입력":
+    if input_mode == "총 스코어 입력":
         for i in range(players_count):
             st.write(f"선수 {i+1}")
             col1, col2 = st.columns(2)
