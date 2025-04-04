@@ -494,6 +494,50 @@
     "average_score": 90.8,
     "handicap": 18.8
   },
+  "신동인": {
+    "tournaments": {
+      "제1차 HUGA 골프대회_2024-04-04": {
+        "date": "2024-04-04",
+        "tournament": "제1차 HUGA 골프대회",
+        "location": "이천 블랙스톤cc",
+        "front_nine": 49,
+        "back_nine": 50,
+        "total_score": 99
+      },
+      "제3차 HUGA 골프대회_2024-09-28": {
+        "date": "2024-09-28",
+        "tournament": "제3차 HUGA 골프대회",
+        "location": "원주 오크밸리cc",
+        "front_nine": 47,
+        "back_nine": 47,
+        "total_score": 94
+      },
+      "제5차 HUGA 골프대회_2025-06-21": {
+        "date": "2025-06-21",
+        "tournament": "제5차 HUGA 골프대회",
+        "location": "인천 잭니클라우스cc",
+        "front_nine": 46,
+        "back_nine": 46,
+        "total_score": 92
+      },
+      "제6차 HUGA 골프대회_2025-09-27": {
+        "date": "2025-09-27",
+        "tournament": "제6차 HUGA 골프대회",
+        "location": "용인 블루원cc",
+        "front_nine": 46,
+        "back_nine": 46,
+        "total_score": 92
+      }
+    },
+    "total_scores": [
+      99,
+      94,
+      92,
+      92
+    ],
+    "average_score": 94.2,
+    "handicap": 22.2
+  },
   "윤성웅": {
     "tournaments": {
       "제1차 HUGA 골프대회_2024-04-04": {
@@ -555,50 +599,6 @@
     ],
     "average_score": 96.2,
     "handicap": 24.2
-  },
-  "신동인": {
-    "tournaments": {
-      "제1차 HUGA 골프대회_2024-04-04": {
-        "date": "2024-04-04",
-        "tournament": "제1차 HUGA 골프대회",
-        "location": "이천 블랙스톤cc",
-        "front_nine": 49,
-        "back_nine": 50,
-        "total_score": 99
-      },
-      "제3차 HUGA 골프대회_2024-09-28": {
-        "date": "2024-09-28",
-        "tournament": "제3차 HUGA 골프대회",
-        "location": "원주 오크밸리cc",
-        "front_nine": 47,
-        "back_nine": 47,
-        "total_score": 94
-      },
-      "제5차 HUGA 골프대회_2025-06-21": {
-        "date": "2025-06-21",
-        "tournament": "제5차 HUGA 골프대회",
-        "location": "인천 잭니클라우스cc",
-        "front_nine": 46,
-        "back_nine": 46,
-        "total_score": 92
-      },
-      "제6차 HUGA 골프대회_2025-09-27": {
-        "date": "2025-09-27",
-        "tournament": "제6차 HUGA 골프대회",
-        "location": "용인 블루원cc",
-        "front_nine": 46,
-        "back_nine": 46,
-        "total_score": 92
-      }
-    },
-    "total_scores": [
-      99,
-      94,
-      92,
-      92
-    ],
-    "average_score": 94.2,
-    "handicap": 22.2
   },
   "홍경택": {
     "tournaments": {
