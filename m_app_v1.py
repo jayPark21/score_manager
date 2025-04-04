@@ -16,15 +16,6 @@ import platform
 import datetime
 import subprocess
 
-# 모바일 최적화를 위한 페이지 설정
-st.set_page_config(
-    page_title="HUGA 골프스코어 매니저",
-    page_icon="🏌️",
-    layout="wide",
-    initial_sidebar_state="collapsed"  # 모바일에서는 사이드바 초기 상태를 접힌 상태로 설정
-)
-
-st.title("HUGA 골프스코어 매니저")
 
 # 모바일 웹 앱 메타데이터 추가
 st.markdown("""
@@ -2367,7 +2358,15 @@ def main():
    
     # 세션 상태 초기화
     init_session_state()
-    
+
+    # 모바일 최적화를 위한 페이지 설정
+    st.set_page_config(
+        page_title="HUGA 골프스코어 매니저",
+        page_icon="🏌️",
+        layout="wide",
+        initial_sidebar_state="collapsed"  # 모바일에서는 사이드바 초기 상태를 접힌 상태로 설정
+    )
+
     st.title("HUGA 골프스코어 매니저 v1.0")
     st.write("한글 이름과 스코어를 자동으로 인식하여 골프스코어를 계산합니다")
 
