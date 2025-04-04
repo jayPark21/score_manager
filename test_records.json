@@ -32,34 +32,16 @@
         "front_nine": 51,
         "back_nine": 52,
         "total_score": 103
-      },
-      "제5차 HUGA 골프대회_2025-06-21": {
-        "date": "2025-06-21",
-        "tournament": "제5차 HUGA 골프대회",
-        "location": "인천 잭니클라우스cc",
-        "front_nine": 49,
-        "back_nine": 49,
-        "total_score": 98
-      },
-      "제6차 HUGA 골프대회_2025-09-27": {
-        "date": "2025-09-27",
-        "tournament": "제6차 HUGA 골프대회",
-        "location": "용인 블루원cc",
-        "front_nine": 49,
-        "back_nine": 49,
-        "total_score": 98
       }
     },
     "total_scores": [
       114,
       98,
       105,
-      103,
-      98,
-      98
+      103
     ],
-    "average_score": 102.7,
-    "handicap": 30.7
+    "average_score": 105.0,
+    "handicap": 33.0
   },
   "김경호": {
     "tournaments": {
@@ -94,34 +76,16 @@
         "front_nine": 41,
         "back_nine": 41,
         "total_score": 82
-      },
-      "제5차 HUGA 골프대회_2025-06-21": {
-        "date": "2025-06-21",
-        "tournament": "제5차 HUGA 골프대회",
-        "location": "인천 잭니클라우스cc",
-        "front_nine": 41,
-        "back_nine": 42,
-        "total_score": 83
-      },
-      "제6차 HUGA 골프대회_2025-09-27": {
-        "date": "2025-09-27",
-        "tournament": "제6차 HUGA 골프대회",
-        "location": "용인 블루원cc",
-        "front_nine": 44,
-        "back_nine": 40,
-        "total_score": 84
       }
     },
     "total_scores": [
       91,
       83,
       92,
-      82,
-      83,
-      84
+      82
     ],
-    "average_score": 85.8,
-    "handicap": 13.8
+    "average_score": 87.0,
+    "handicap": 15.0
   },
   "김대욱": {
     "tournaments": {
@@ -140,32 +104,14 @@
         "front_nine": 45,
         "back_nine": 46,
         "total_score": 91
-      },
-      "제5차 HUGA 골프대회_2025-06-21": {
-        "date": "2025-06-21",
-        "tournament": "제5차 HUGA 골프대회",
-        "location": "인천 잭니클라우스cc",
-        "front_nine": 44,
-        "back_nine": 45,
-        "total_score": 89
-      },
-      "제6차 HUGA 골프대회_2025-09-27": {
-        "date": "2025-09-27",
-        "tournament": "제6차 HUGA 골프대회",
-        "location": "용인 블루원cc",
-        "front_nine": 44,
-        "back_nine": 45,
-        "total_score": 89
       }
     },
     "total_scores": [
       86,
-      91,
-      89,
-      89
+      91
     ],
-    "average_score": 88.8,
-    "handicap": 16.8
+    "average_score": 88.5,
+    "handicap": 16.5
   },
   "김도한": {
     "tournaments": {
@@ -192,33 +138,15 @@
         "front_nine": 45,
         "back_nine": 46,
         "total_score": 91
-      },
-      "제5차 HUGA 골프대회_2025-06-21": {
-        "date": "2025-06-21",
-        "tournament": "제5차 HUGA 골프대회",
-        "location": "인천 잭니클라우스cc",
-        "front_nine": 45,
-        "back_nine": 45,
-        "total_score": 90
-      },
-      "제6차 HUGA 골프대회_2025-09-27": {
-        "date": "2025-09-27",
-        "tournament": "제6차 HUGA 골프대회",
-        "location": "용인 블루원cc",
-        "front_nine": 45,
-        "back_nine": 45,
-        "total_score": 90
       }
     },
     "total_scores": [
       102,
       97,
-      91,
-      90,
-      90
+      91
     ],
-    "average_score": 94.0,
-    "handicap": 22.0
+    "average_score": 96.7,
+    "handicap": 24.7
   },
   "김동준": {
     "tournaments": {
@@ -253,34 +181,16 @@
         "front_nine": 43,
         "back_nine": 44,
         "total_score": 87
-      },
-      "제5차 HUGA 골프대회_2025-06-21": {
-        "date": "2025-06-21",
-        "tournament": "제5차 HUGA 골프대회",
-        "location": "인천 잭니클라우스cc",
-        "front_nine": 45,
-        "back_nine": 45,
-        "total_score": 90
-      },
-      "제6차 HUGA 골프대회_2025-09-27": {
-        "date": "2025-09-27",
-        "tournament": "제6차 HUGA 골프대회",
-        "location": "용인 블루원cc",
-        "front_nine": 45,
-        "back_nine": 45,
-        "total_score": 90
       }
     },
     "total_scores": [
       98,
       93,
       90,
-      87,
-      90,
-      90
+      87
     ],
-    "average_score": 91.3,
-    "handicap": 19.3
+    "average_score": 92.0,
+    "handicap": 20.0
   },
   "김병규": {
     "tournaments": {
@@ -299,22 +209,6 @@
         "front_nine": 42,
         "back_nine": 43,
         "total_score": 85
-      },
-      "제5차 HUGA 골프대회_2025-06-21": {
-        "date": "2025-06-21",
-        "tournament": "제5차 HUGA 골프대회",
-        "location": "인천 잭니클라우스cc",
-        "front_nine": 46,
-        "back_nine": 46,
-        "total_score": 92
-      },
-      "제6차 HUGA 골프대회_2025-09-27": {
-        "date": "2025-09-27",
-        "tournament": "제6차 HUGA 골프대회",
-        "location": "용인 블루원cc",
-        "front_nine": 46,
-        "back_nine": 46,
-        "total_score": 92
       }
     },
     "total_scores": [
@@ -323,8 +217,8 @@
       92,
       92
     ],
-    "average_score": 91.2,
-    "handicap": 19.2
+    "average_score": 90.5,
+    "handicap": 18.5
   },
   "박재영": {
     "tournaments": {
@@ -351,33 +245,15 @@
         "front_nine": 46,
         "back_nine": 47,
         "total_score": 93
-      },
-      "제5차 HUGA 골프대회_2025-06-21": {
-        "date": "2025-06-21",
-        "tournament": "제5차 HUGA 골프대회",
-        "location": "인천 잭니클라우스cc",
-        "front_nine": 43,
-        "back_nine": 43,
-        "total_score": 86
-      },
-      "제6차 HUGA 골프대회_2025-09-27": {
-        "date": "2025-09-27",
-        "tournament": "제6차 HUGA 골프대회",
-        "location": "용인 블루원cc",
-        "front_nine": 43,
-        "back_nine": 43,
-        "total_score": 86
       }
     },
     "total_scores": [
       92,
       107,
-      93,
-      86,
-      86
+      93
     ],
-    "average_score": 92.8,
-    "handicap": 20.8
+    "average_score": 97.3,
+    "handicap": 25.3
   },
   "박종호": {
     "tournaments": {
@@ -412,22 +288,6 @@
         "front_nine": 50,
         "back_nine": 51,
         "total_score": 101
-      },
-      "제5차 HUGA 골프대회_2025-06-21": {
-        "date": "2025-06-21",
-        "tournament": "제5차 HUGA 골프대회",
-        "location": "인천 잭니클라우스cc",
-        "front_nine": 49,
-        "back_nine": 49,
-        "total_score": 98
-      },
-      "제6차 HUGA 골프대회_2025-09-27": {
-        "date": "2025-09-27",
-        "tournament": "제6차 HUGA 골프대회",
-        "location": "용인 블루원cc",
-        "front_nine": 49,
-        "back_nine": 49,
-        "total_score": 98
       }
     },
     "total_scores": [
@@ -438,8 +298,8 @@
       98,
       98
     ],
-    "average_score": 97.0,
-    "handicap": 25.0
+    "average_score": 96.5,
+    "handicap": 24.5
   },
   "박창서": {
     "tournaments": {
@@ -466,33 +326,15 @@
         "front_nine": 51,
         "back_nine": 51,
         "total_score": 102
-      },
-      "제5차 HUGA 골프대회_2025-06-21": {
-        "date": "2025-06-21",
-        "tournament": "제5차 HUGA 골프대회",
-        "location": "인천 잭니클라우스cc",
-        "front_nine": 45,
-        "back_nine": 45,
-        "total_score": 90
-      },
-      "제6차 HUGA 골프대회_2025-09-27": {
-        "date": "2025-09-27",
-        "tournament": "제6차 HUGA 골프대회",
-        "location": "용인 블루원cc",
-        "front_nine": 45,
-        "back_nine": 45,
-        "total_score": 90
       }
     },
     "total_scores": [
       83,
       89,
-      102,
-      90,
-      90
+      102
     ],
-    "average_score": 90.8,
-    "handicap": 18.8
+    "average_score": 91.3,
+    "handicap": 19.3
   },
   "신동인": {
     "tournaments": {
@@ -511,32 +353,14 @@
         "front_nine": 47,
         "back_nine": 47,
         "total_score": 94
-      },
-      "제5차 HUGA 골프대회_2025-06-21": {
-        "date": "2025-06-21",
-        "tournament": "제5차 HUGA 골프대회",
-        "location": "인천 잭니클라우스cc",
-        "front_nine": 46,
-        "back_nine": 46,
-        "total_score": 92
-      },
-      "제6차 HUGA 골프대회_2025-09-27": {
-        "date": "2025-09-27",
-        "tournament": "제6차 HUGA 골프대회",
-        "location": "용인 블루원cc",
-        "front_nine": 46,
-        "back_nine": 46,
-        "total_score": 92
       }
     },
     "total_scores": [
       99,
-      94,
-      92,
-      92
+      94
     ],
-    "average_score": 94.2,
-    "handicap": 22.2
+    "average_score": 96.5,
+    "handicap": 24.5
   },
   "윤성웅": {
     "tournaments": {
@@ -571,34 +395,16 @@
         "front_nine": 44,
         "back_nine": 45,
         "total_score": 89
-      },
-      "제5차 HUGA 골프대회_2025-06-21": {
-        "date": "2025-06-21",
-        "tournament": "제5차 HUGA 골프대회",
-        "location": "인천 잭니클라우스cc",
-        "front_nine": 46,
-        "back_nine": 47,
-        "total_score": 93
-      },
-      "제6차 HUGA 골프대회_2025-09-27": {
-        "date": "2025-09-27",
-        "tournament": "제6차 HUGA 골프대회",
-        "location": "용인 블루원cc",
-        "front_nine": 46,
-        "back_nine": 47,
-        "total_score": 93
       }
     },
     "total_scores": [
       102,
       93,
       107,
-      89,
-      93,
-      93
+      89
     ],
-    "average_score": 96.2,
-    "handicap": 24.2
+    "average_score": 97.8,
+    "handicap": 25.8
   },
   "홍경택": {
     "tournaments": {
@@ -625,32 +431,14 @@
         "front_nine": 52,
         "back_nine": 53,
         "total_score": 105
-      },
-      "제5차 HUGA 골프대회_2025-06-21": {
-        "date": "2025-06-21",
-        "tournament": "제5차 HUGA 골프대회",
-        "location": "인천 잭니클라우스cc",
-        "front_nine": 49,
-        "back_nine": 50,
-        "total_score": 99
-      },
-      "제6차 HUGA 골프대회_2025-09-27": {
-        "date": "2025-09-27",
-        "tournament": "제6차 HUGA 골프대회",
-        "location": "용인 블루원cc",
-        "front_nine": 45,
-        "back_nine": 48,
-        "total_score": 93
       }
     },
     "total_scores": [
       105,
       120,
-      105,
-      99,
-      93
+      105
     ],
-    "average_score": 104.4,
-    "handicap": 32.4
+    "average_score": 110.0,
+    "handicap": 38.0
   }
 }
