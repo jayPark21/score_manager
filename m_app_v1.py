@@ -50,7 +50,8 @@ elif platform.system() == 'Linux':
 # 파일 경로 설정 - 클라우드 환경 고려
 base_dir = os.path.dirname(os.path.abspath(__file__)) if '__file__' in globals() else os.getcwd()
 TOURNAMENT_INFO_FILE = os.path.join(base_dir, 'tournament_info.json')
-PLAYER_RECORDS_FILE = os.path.join(base_dir, 'player_records.json')
+# PLAYER_RECORDS_FILE = os.path.join(base_dir, 'player_records.json')
+PLAYER_RECORDS_FILE = os.path.join(base_dir, 'test_records.json')
 PLAYERS_FILE = os.path.join(base_dir, 'saved_players.json')
 
 # 디버그 모드 설정
