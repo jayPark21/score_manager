@@ -17,7 +17,7 @@ import datetime
 
 # 모바일 최적화를 위한 페이지 설정
 st.set_page_config(
-    page_title="HUGA 골프스코어 매니저저",
+    page_title="HUGA 골프스코어 매니저",
     page_icon="🏌️",
     layout="wide",
     initial_sidebar_state="collapsed"  # 모바일에서는 사이드바 초기 상태를 접힌 상태로 설정
@@ -28,6 +28,10 @@ if platform.system() == 'Windows':
     pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 elif platform.system() == 'Linux':
     pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
+
+st.write("Tesseract 언어 파일:")
+result = subprocess.run(['ls -la /usr/share/tesseract-ocr/4.00/tessdata/'], shell=True, capture_output=True, text=True)
+st.code(result.stdout)
 
 # 파일 경로 설정 - 클라우드 환경 고려
 base_dir = os.path.dirname(os.path.abspath(__file__)) if '__file__' in globals() else os.getcwd()
