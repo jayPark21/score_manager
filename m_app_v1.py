@@ -2093,10 +2093,10 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
             table_data.append({
                 '순  위': rank,
                 '선수명': name,
-                '총총스코어': final_score,
+                '총스코어': final_score,
                 '평균타수': avg_score,
                 '핸디캡': handicap,
-                '네트점수': net_score
+                '네트점수': net_score,
                 '전회스코어': prev_score if prev_score > 0 else "-",
                 '타수차': score_diff if prev_score > 0 else "-"
              })
