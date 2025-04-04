@@ -23,7 +23,9 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"  # 모바일에서는 사이드바 초기 상태를 접힌 상태로 설정
 )
- 
+
+st.title("HUGA 골프스코어 매니저")
+
 # 모바일 웹 앱 메타데이터 추가
 st.markdown("""
     <head>
@@ -42,18 +44,6 @@ if platform.system() == 'Windows':
     pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 elif platform.system() == 'Linux':
     pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
-
-# st.write("Tesseract 버전:")
-# result = subprocess.run(['tesseract', '--version'], capture_output=True, text=True)
-# st.code(result.stdout)
-
-# st.write("Tesseract 언어 파일:")
-# result = subprocess.run(['ls -la /usr/share/tesseract-ocr/4.00/tessdata/'], shell=True, capture_output=True, text=True)
-# st.code(result.stdout)
-
-# st.write("설치된 패키지:")
-# result = subprocess.run(['apt list --installed | grep tesseract'], shell=True, capture_output=True, text=True)
-# st.code(result.stdout)
 
 # 파일 경로 설정 - 클라우드 환경 고려
 base_dir = os.path.dirname(os.path.abspath(__file__)) if '__file__' in globals() else os.getcwd()
