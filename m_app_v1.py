@@ -23,6 +23,19 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"  # 모바일에서는 사이드바 초기 상태를 접힌 상태로 설정
 )
+ 
+# 모바일 웹 앱 메타데이터 추가
+st.markdown("""
+    <head>
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="apple-mobile-web-app-title" content="HUGA Golf Manager">
+        <meta name="application-name" content="HUGA 골프스코어 자동계">
+        <meta name="theme-color" content="#4682b4">
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🏌️</text></svg>">
+        <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🏌️</text></svg>">
+    </head>
+""", unsafe_allow_html=True)
 
 # 운영체제에 따라 Tesseract 경로 설정
 if platform.system() == 'Windows':
@@ -2367,7 +2380,8 @@ def main():
     
     st.title("HUGA 골프스코어 매니저 v1.0")
     st.write("한글 이름과 스코어를 자동으로 인식하여 골프스코어를 계산합니다")
-    
+
+     
     # CSS 스타일링 정의 - 테두리 강화
     st.markdown("""
     <style>
