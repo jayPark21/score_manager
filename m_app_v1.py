@@ -25,7 +25,7 @@ st.set_page_config(
 )
 
 st.title("HUGA Golf Manager")
-st.write("이름과 스코어를 자동/수동으로 인식하여 골프스코어를 계산합니다")
+st.write("한양대학교 92 도시공학과 골프동호회(HUGA) 골프스코어 관리 프로그램")
 
 
 # 모바일 웹 앱 메타데이터 추가
