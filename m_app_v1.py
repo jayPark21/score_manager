@@ -2093,7 +2093,7 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
             table_data.append({
                 '순  위': rank,
                 '선수명': name,
-                '종스코어': final_score,
+                '총총스코어': final_score,
                 '평균타수': avg_score,
                 '핸디캡': handicap,
                 '네트점수': net_score
@@ -2127,7 +2127,7 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
             df,
             column_config={
                 '순  위': st.column_config.NumberColumn(format="%d"),
-                '종스코어': st.column_config.NumberColumn(format="%d"),
+                '총스코어': st.column_config.NumberColumn(format="%d"),
                 '평  균': st.column_config.NumberColumn(format="%.1f"),
                 '핸디캡': st.column_config.NumberColumn(format="%.1f"),
                 '네트점수': st.column_config.NumberColumn(format="%.1f")
