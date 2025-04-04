@@ -2129,10 +2129,10 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
     
     with col2:
         # 선수별 기록 표시 버튼
-        if st.button("선수별 기록 표시", key="show_player_records_button"):
+        if st.button("선수별 기록", key="show_player_records_button"):
             # 선수별 기록을 바로 표시하도록 함수 호출
             st.subheader("📊 선수별 기록")
-            display_player_records()  # 인수가 필요한 경우 수정 필요
+            display_player_stats_page()  # 인수가 필요한 경우 수정 필요
             
 
     # 선수 기록 업데이트 (대회 추가)
