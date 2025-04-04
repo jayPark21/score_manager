@@ -1974,7 +1974,10 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
                 player['핸디캡'] = 0
             if '최종스코어' in player and '네트점수' not in player:
                 player['네트점수'] = player['최종스코어'] - player.get('핸디캡', 0)
-    
+
+            player['전회스코어'] = 0
+            player['스코어차이'] = 0
+  
     # 최종스코어 기준 정렬 (요구사항 3: 최종스코어순으로 정렬)
     sorted_data = sorted(players_data, key=lambda x: x.get('최종스코어', 999))
     score_key = '최종스코어'
@@ -2076,9 +2079,11 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
             rank = ranks.get(i, i+1)
             name = player.get('이름', '')
             final_score = int(player.get('최종스코어', 0) or 0)
-            avg_score = round(float(player.get('평균스코어', 0) or 0), 1)
             handicap = round(float(player.get('핸디캡', 0) or 0), 1)
-            
+            avg_score = round(float(player.get('평균스코어', 0) or 0), 1)
+            prev_score = int(player.get('전회스코어', 0) or 0)
+            score_diff = int(player.get('스코어차이', 0) or 0)
+             
             # 네트점수 계산
             if '네트점수' in player and player['네트점수'] is not None:
                 net_score = round(float(player['네트점수']), 1)
@@ -2089,16 +2094,35 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
                 '순  위': rank,
                 '선수명': name,
                 '종스코어': final_score,
-                '평  균': avg_score,
+                '평균타수': avg_score,
                 '핸디캡': handicap,
                 '네트점수': net_score
-            })
+                '전회스코어': prev_score if prev_score > 0 else "-",
+                '타수차': score_diff if prev_score > 0 else "-"
+             })
         except (ValueError, TypeError) as e:
             pass
     
     # 데이터프레임 생성 및 표시
     if table_data:
         df = pd.DataFrame(table_data)
+
+        # 향상된 테이블 스타일링
+        st.markdown("""
+        <style>
+        .dataframe-container {
+            margin-top: 25px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #121212;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        </style>
+        <div class="dataframe-container">
+        <h3>📊 전체 순위표</h3>
+        </div>
+        """, unsafe_allow_html=True)
+        
         st.dataframe(
             df,
             column_config={
@@ -2113,7 +2137,12 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
         )
     else:
         st.warning("표시할 데이터가 없습니다.")
-    
+        
+    def switch_to_player_records():
+        """선수별 기록 페이지로 전환하는 함수"""
+        # 세션 상태에 "선수별 기록" 페이지로 전환하도록 설정
+        st.session_state.page_select = "선수별 기록"
+ 
     # CSV 다운로드 버튼
     col1, col2 = st.columns([1, 4])
     with col1:
@@ -2128,12 +2157,8 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
         )
     
     with col2:
-        # 선수별 기록 표시 버튼
-        if st.button("선수별 기록", key="show_player_records_button"):
-            # 선수별 기록을 바로 표시하도록 함수 호출
-            st.subheader("📊 선수별 기록")
-            display_player_stats_page()  # 인수가 필요한 경우 수정 필요
-            
+        if st.button("선수별 기록", key="show_player_records_button", on_click=switch_to_player_records):
+            pass    # on_click 함수에서 페이지 변경 처리       
 
     # 선수 기록 업데이트 (대회 추가)
     update_player_records(players_data, tournament_info)
@@ -2494,7 +2519,30 @@ def main():
     with st.container():
         st.markdown('<div class="menu-container">', unsafe_allow_html=True)
         st.markdown('<p class="big-font">메뉴 선택</p>', unsafe_allow_html=True)
-        page = st.radio("", ["스코어 입력", "선수별 기록"], horizontal=True, label_visibility="collapsed", key="page_select")
+        
+        # 경고 메시지 제거를 위한 수정: 
+        # 세션 상태 값이 존재할 때 해당 값을 사용하되, 라디오 버튼의 key를 다르게 사용
+        # page_select가 세션 상태에 있는지 확인
+        if 'page_select' not in st.session_state:
+            st.session_state.page_select = "스코어 입력"
+        
+        # 현재 선택된 페이지 확인
+        current_page = st.session_state.page_select
+        
+        # 라디오 버튼 - key를 session state 값 설정과 분리
+        selected_page = st.radio(
+            "", 
+            ["스코어 입력", "선수별 기록"], 
+            horizontal=True, 
+            label_visibility="collapsed",
+            index=0 if current_page == "스코어 입력" else 1,
+            key="page_radio_select"  # 다른 key 사용
+        )
+        
+        # 라디오 버튼의 선택이 변경되면 세션 상태 업데이트
+        if selected_page != current_page:
+            st.session_state.page_select = selected_page
+            
         st.markdown('</div>', unsafe_allow_html=True)
 
     # 선택된 페이지에 따라 내용 표시
@@ -2503,11 +2551,12 @@ def main():
     with content_placeholder.container():
         st.markdown('<div class="content-section">', unsafe_allow_html=True)
         
-        if page == "스코어 입력":
+        current_page = st.session_state.page_select
+        if current_page == "스코어 입력":
             display_score_calculation_page()
-        elif page == "선수별 기록":
+        elif current_page == "선수별 기록":
             display_player_stats_page()
-        
+       
         st.markdown('</div>', unsafe_allow_html=True)
 
     
