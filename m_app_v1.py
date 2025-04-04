@@ -2018,14 +2018,14 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
         border-radius: 5px;
     }
     .winner-box {
-        background-color: #121212;
+        background-color: #f8f9d2;
         border: 2px solid #e6d72a;
         border-radius: 10px;
         padding: 15px;
         margin: 20px 0;
     }
     .medallist-box {
-        background-color: #121212;
+        background-color: #f0f8ff;
         border: 2px solid #4682B4;
         border-radius: 10px;
         padding: 15px;
