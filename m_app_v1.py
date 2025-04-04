@@ -1936,7 +1936,7 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
             avg_score = player_records[name].get('average_score')
             player['평균스코어'] = 0 if avg_score is None else avg_score
             
-            # 계산된 핸디캡 적용 (평균 스코어 - 72) (None 값 처리)
+            # 계산된 핸디캡 적용 
             calculated_handicap = player_records[name].get('handicap')
             calculated_handicap = 0 if calculated_handicap is None else calculated_handicap
             
@@ -1950,12 +1950,28 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
             if '최종스코어' in player:
                 handicap_value = player.get('핸디캡', 0) or 0  # None인 경우 0으로 처리
                 player['네트점수'] = player['최종스코어'] - handicap_value
+                   
+            # 전회 대회 기록 가져오기 (가장 최근의 대회)
+            tournaments = player_records[name].get("tournaments", {})
+            previous_tournaments = sorted(
+                [t for t_id, t in tournaments.items() if t_id != f"{tournament_round}_{tournament_date}"],
+                key=lambda x: x.get("date", ""),
+                reverse=True
+            )
+            
+            if previous_tournaments:
+                last_tournament = previous_tournaments[0]
+                player['전회스코어'] = last_tournament.get('total_score', 0)
+                player['스코어차이'] = player['최종스코어'] - player['전회스코어']
+            else:
+                player['전회스코어'] = 0
+                player['스코어차이'] = 0
         else:
             # 기본값 설정
-            if '핸디캡' not in player:
-                player['핸디캡'] = 0
             if '평균스코어' not in player:
                 player['평균스코어'] = 0
+            if '핸디캡' not in player:
+                player['핸디캡'] = 0
             if '최종스코어' in player and '네트점수' not in player:
                 player['네트점수'] = player['최종스코어'] - player.get('핸디캡', 0)
     
@@ -1984,10 +2000,70 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
         current_rank += len(indices)
 
 
+# 분리선을 추가하여 결과 화면 구분
+    st.markdown("""
+    <style>
+    .divider {
+        height: 3px;
+        margin: 30px 0;
+        background: linear-gradient(to right, #4682B4, #87CEEB, #4682B4);
+        border-radius: 2px;
+    }
+    .result-header {
+        margin-top: 40px;
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #121212;
+        border-left: 5px solid #4682B4;
+        border-radius: 5px;
+    }
+    .winner-box {
+        background-color: #121212;
+        border: 2px solid #e6d72a;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 20px 0;
+    }
+    .medallist-box {
+        background-color: #121212;
+        border: 2px solid #4682B4;
+        border-radius: 10px;
+        padding: 15px;
+        margin: 20px 0;
+    }
+    </style>
+    
+    <div class="divider"></div>
+    <div class="result-header">
+        <h2>🏆 대회 결과</h2>
+    </div>
+    """, unsafe_allow_html=True)
+
     # 간단한 대회 정보 헤더 표시
     st.header(f"{tournament_round} 전체순위 결과", anchor=False)
     st.subheader(f"날짜: {tournament_date}   |   장소: {golf_location}", anchor=False)
-    
+
+    # 우승자 (전회 대회 대비 최저타수 득점자) 찾기
+    if sorted_data:
+        # 전회 대비 스코어 차이가 있는 선수들만 필터링
+        players_with_diff = [p for p in sorted_data if p.get('전회스코어', 0) > 0]
+        
+        # 차이 기준으로 정렬
+        if players_with_diff:
+            # 가장 많이 향상된 선수 (스코어 차이가 가장 작은/음수 값인 선수)
+            winner = sorted(players_with_diff, key=lambda x: x.get('스코어차이', 0))[0]
+            
+            # 우승자 표시
+            st.markdown(f"""
+            <div class="winner-box">
+                <h3>🏆 우승자: {winner['이름']}</h3>
+                <p>최종 스코어: {winner['최종스코어']}타</p>
+                <p>전회 대비: {winner['스코어차이']}타 ({winner['전회스코어']} → {winner['최종스코어']})</p>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.info("전회 대회 기록이 있는 선수가 없어 우승자를 결정할 수 없습니다.")
+
     # 메달리스트 (1등) 표시 - 간단하게
     if sorted_data:
         medallist = sorted_data[0]
@@ -2000,8 +2076,8 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
             rank = ranks.get(i, i+1)
             name = player.get('이름', '')
             final_score = int(player.get('최종스코어', 0) or 0)
-            handicap = round(float(player.get('핸디캡', 0) or 0), 1)
             avg_score = round(float(player.get('평균스코어', 0) or 0), 1)
+            handicap = round(float(player.get('핸디캡', 0) or 0), 1)
             
             # 네트점수 계산
             if '네트점수' in player and player['네트점수'] is not None:
@@ -2013,8 +2089,8 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
                 '순위': rank,
                 '선수명': name,
                 '최종스코어': final_score,
-                '핸디캡': handicap,
                 '평균': avg_score,
+                '핸디캡': handicap,
                 '네트점수': net_score
             })
         except (ValueError, TypeError) as e:
@@ -2028,8 +2104,8 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
             column_config={
                 '순위': st.column_config.NumberColumn(format="%d"),
                 '최종스코어': st.column_config.NumberColumn(format="%d"),
-                '핸디캡': st.column_config.NumberColumn(format="%.1f"),
                 '평균': st.column_config.NumberColumn(format="%.1f"),
+                '핸디캡': st.column_config.NumberColumn(format="%.1f"),
                 '네트점수': st.column_config.NumberColumn(format="%.1f")
             },
             hide_index=True,
