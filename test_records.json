@@ -41,7 +41,7 @@
       103
     ],
     "average_score": 105.0,
-    "handicap": 33.0
+    "handicap": 100.0
   },
   "김경호": {
     "tournaments": {
@@ -85,7 +85,7 @@
       82
     ],
     "average_score": 87.0,
-    "handicap": 15.0
+    "handicap": 87.0
   },
   "김대욱": {
     "tournaments": {
@@ -111,7 +111,7 @@
       91
     ],
     "average_score": 88.5,
-    "handicap": 16.5
+    "handicap": 88.5
   },
   "김도한": {
     "tournaments": {
@@ -146,7 +146,7 @@
       91
     ],
     "average_score": 96.7,
-    "handicap": 24.7
+    "handicap": 96.7
   },
   "김동준": {
     "tournaments": {
@@ -190,7 +190,7 @@
       87
     ],
     "average_score": 92.0,
-    "handicap": 20.0
+    "handicap": 92.0
   },
   "김병규": {
     "tournaments": {
@@ -218,7 +218,7 @@
       92
     ],
     "average_score": 90.5,
-    "handicap": 18.5
+    "handicap": 90.5
   },
   "박재영": {
     "tournaments": {
@@ -253,7 +253,7 @@
       93
     ],
     "average_score": 97.3,
-    "handicap": 25.3
+    "handicap": 97.3
   },
   "박종호": {
     "tournaments": {
@@ -299,7 +299,7 @@
       98
     ],
     "average_score": 96.5,
-    "handicap": 24.5
+    "handicap": 96.5
   },
   "박창서": {
     "tournaments": {
@@ -334,7 +334,7 @@
       102
     ],
     "average_score": 91.3,
-    "handicap": 19.3
+    "handicap": 91.3
   },
   "신동인": {
     "tournaments": {
@@ -360,7 +360,7 @@
       94
     ],
     "average_score": 96.5,
-    "handicap": 24.5
+    "handicap": 96.5
   },
   "윤성웅": {
     "tournaments": {
@@ -404,7 +404,7 @@
       89
     ],
     "average_score": 97.8,
-    "handicap": 25.8
+    "handicap": 97.8
   },
   "홍경택": {
     "tournaments": {
@@ -439,6 +439,6 @@
       105
     ],
     "average_score": 110.0,
-    "handicap": 38.0
+    "handicap": 100.0
   }
 }
