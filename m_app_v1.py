@@ -103,8 +103,9 @@ def add_mobile_css():
         
          /* 제목 폰트 크기 줄이기 */
         h1 {
-            font-size: 1.5rem !important; /* 기본 크기보다 작게 조정 */
+            font-size: 1.0rem !important; /* 기본 크기보다 작게 조정 */
         }
+        
         /* 제목 여백 줄이기 */
         h1, h2, h3 {
             margin-top: 0.5rem;
