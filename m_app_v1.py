@@ -1820,7 +1820,7 @@ def display_player_records():
             margin-bottom: 30px;
         }
         .detail-header {
-            background-color: #f2f2f2;
+            background-color: #a6a6a4;
             padding: 10px;
             border-radius: 5px;
             margin-top: 25px;
@@ -1831,29 +1831,11 @@ def display_player_records():
             margin-top: 10px;
         }
         </style>
-        """, unsafe_allow_html=True)
-         
-        # 선수별 상세 기록 (확장 가능)
-        st.markdown('<div class="detail-header"><h3>🏌️ 선수별 상세 기록</h3></div>', unsafe_allow_html=True)
-        
-        for name, data in sorted(records.items(), key=lambda x: x[0]):  # 이름 순 정렬
-            # 핸디캡과 평균 스코어를 정수로 표시
-            avg_score = round(data.get('average_score', 0), 1)
-            handicap = round(data.get('handicap', 0), 1)
-    
-            with st.expander(f"{name} - 평균스코어: {avg_score}, 핸디캡: {handicap}"):
-                # 대회별 기록을 표로 변환
-                tournaments = data.get("tournaments", {})
-                if tournaments:
-                    tournament_data = []
-                    for t_id, t_info in tournaments.items():
-                        tournament_data.append({
-                            "날짜": t_info.get("date", ""),
-                            "대회": t_info.get("tournament", ""),
+ 수": t_info.get("tournament", ""),
                             "장소": t_info.get("location", ""),
-                            "전반": t_info.get("front_nine", 0),
-                            "후반": t_info.get("back_nine", 0),
-                            "최종스코어": t_info.get("total_score", 0)
+                            # "전반": t_info.get("front_nine", 0),
+                            # "후반": t_info.get("back_nine", 0),
+                            "총스코어": t_info.get("total_score", 0)
                         })
                     
                     # 날짜 기준 내림차순 정렬
