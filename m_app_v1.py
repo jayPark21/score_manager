@@ -340,7 +340,7 @@ def save_player_records(records):
     try:
         # 디렉토리가 없으면 생성
         os.makedirs(os.path.dirname(PLAYER_RECORDS_FILE) or '.', exist_ok=True)
-        
+        st.write("111 : " + PLAYER_RECORDS_FILE)
         with open(PLAYER_RECORDS_FILE, 'w', encoding='utf-8') as f:
             json.dump(records, f, ensure_ascii=False, indent=2)
             st.write(records)
