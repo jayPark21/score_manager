@@ -1820,7 +1820,7 @@ def display_player_records():
             margin-bottom: 30px;
         }
         .detail-header {
-            background-color: #121212;
+            background-color: #f2f2f2;
             padding: 10px;
             border-radius: 5px;
             margin-top: 25px;
@@ -1832,12 +1832,7 @@ def display_player_records():
         }
         </style>
         """, unsafe_allow_html=True)
-        
-        # # 표 표시
-        # st.markdown('<div class="player-record-table">', unsafe_allow_html=True)
-        # st.table(records_df)
-        # st.markdown('</div>', unsafe_allow_html=True)
-        
+         
         # 선수별 상세 기록 (확장 가능)
         st.markdown('<div class="detail-header"><h3>🏌️ 선수별 상세 기록</h3></div>', unsafe_allow_html=True)
         
