@@ -268,7 +268,6 @@ def save_players_to_file(players):
         
         with open(PLAYERS_FILE, 'w', encoding='utf-8') as f:
             json.dump(players, f, ensure_ascii=False, indent=2)
-            # st.success("저장 성공")
         return True
     except Exception as e:
         st.error(f"선수 명단 저장 오류: {e}")
@@ -339,11 +338,10 @@ def save_player_records(records):
     """선수별 전체 대회 기록 저장하기"""
     try:
         # 디렉토리가 없으면 생성
-        st.write("111 :", PLAYER_RECORDS_FILE)
         os.makedirs(os.path.dirname(PLAYER_RECORDS_FILE) or '.', exist_ok=True)
         with open(PLAYER_RECORDS_FILE, 'w', encoding='utf-8') as f:
             json.dump(records, f, ensure_ascii=False, indent=2)
-            st.write("222 :", records)
+            # st.write("222 :", records)
         return True
     except Exception as e:
         st.error(f"선수 기록 저장 오류: {e}")
