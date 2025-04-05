@@ -1738,7 +1738,7 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
         
             # 파일에 저장
             save_players_to_file(players_to_save)
-            # st.success(f"선수 명단 {len(players_to_save)}명이 저장되었습니다.")
+            st.success(f"선수 명단 {len(players_to_save)}명이 저장되었습니다.")
         
         return player_data, tournament_date
     
@@ -2169,6 +2169,7 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
 
     # 선수 기록 업데이트 (대회 추가)
     update_player_records(players_data, tournament_info)
+    st.success("업데이트 성공")
     
 
 def display_score_calculation_page():
