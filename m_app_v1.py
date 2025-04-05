@@ -268,7 +268,7 @@ def save_players_to_file(players):
         
         with open(PLAYERS_FILE, 'w', encoding='utf-8') as f:
             json.dump(players, f, ensure_ascii=False, indent=2)
-            st.success("저장 성공")
+            # st.success("저장 성공")
         return True
     except Exception as e:
         st.error(f"선수 명단 저장 오류: {e}")
