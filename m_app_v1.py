@@ -1709,11 +1709,11 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
             })
         
     # 현재 선수 명단 저장 옵션
-    save_current_players = st.checkbox("현재 선수 명단 저장하기", value=True, key=f"save_current_players")
+    save_current_players = st.checkbox("현재선수명단 저장", value=True, key=f"save_current_players")
 
     
     # 계산 버튼을 별도 배치
-    if st.button("스코어 계산하기", key=f"calculate_scores_button"):
+    if st.button("스코어 계산", key=f"calculate_scores_button"):
         # 대회 회차 정보 저장
         if tournament_round:
             save_tournament_info(tournament_round, golf_location, tournament_date)
