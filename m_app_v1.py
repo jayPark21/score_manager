@@ -24,8 +24,8 @@ st.set_page_config(
     initial_sidebar_state="collapsed"  # 모바일에서는 사이드바 초기 상태를 접힌 상태로 설정
 )
 
-st.title("HUGA Golf Manager")
-st.write("한양대학교 92 도시공학과 골프동호회(HUGA) 골프스코어 관리 프로그램")
+st.title("HUGA Golf Score Manager")
+st.write("한양대학교 92 도시공학과 골프동호회 스코어 관리")
 
 # 모바일 웹 앱 메타데이터 추가
 st.markdown("""
@@ -2473,7 +2473,7 @@ def main():
     # 세션 상태 초기화
     init_session_state()
 
-    # CSS 스타일 적용 - 이 부분이 누락되어 있었습니다!
+    # CSS 스타일 적용 
     add_mobile_css()
     
     # 메뉴 선택 컨테이너
