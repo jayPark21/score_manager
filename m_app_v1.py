@@ -1779,7 +1779,7 @@ def display_player_records():
             records_df.at[idx, "순위"] = i + 1
                 
         # 테이블 표시 (인덱스 숨김)
-        final_df = records_df[["순위", "이름", "평균", "핸디캡", "참가대회수"]].reset_index(drop=True)
+        final_df = records_df[["순위", "선수명", "평균", "핸디캡", "참가대회수"]].reset_index(drop=True)
         # st.table(records_df)
         
         # 데이터프레임 소수점 형식 지정
