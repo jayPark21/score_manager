@@ -1764,15 +1764,15 @@ def display_player_records():
             tournament_count = len(data.get("tournaments", {}))
             
             records_data.append({
-                "순  위": 0,
+                "순위": 0,
                 "선수명": name,
-                "평  균": avg_score,
+                "평균": avg_score,
                 "핸디캡": handicap,
                 "참가대회수": tournament_count
             })
             
         # 평균 스코어 기준으로 정렬
-        records_df = pd.DataFrame(records_data).sort_values(by="평균스코어")
+        records_df = pd.DataFrame(records_data).sort_values(by="평균")
         
         # 순위 업데이트 (1부터 시작)
         for i, idx in enumerate(records_df.index):
