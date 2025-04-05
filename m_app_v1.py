@@ -1789,7 +1789,7 @@ def display_player_records():
                 "평균": st.column_config.NumberColumn(format="%.1f"),
                 "핸디캡": st.column_config.NumberColumn(format="%.1f")
             },
-            use_container_width=True
+            use_container_width=True,
             hide_index=True    # 인덱스 컬럼 숨김 설정
         )
         
