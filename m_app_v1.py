@@ -24,7 +24,13 @@ st.set_page_config(
     initial_sidebar_state="collapsed"  # 모바일에서는 사이드바 초기 상태를 접힌 상태로 설정
 )
 
-st.title("HUGA Golf Score Manager")
+# st.title("HUGA Golf Score Manager")
+st.markdown("""
+    <h1 style="font-size: 2.2rem; font-weight: 700; color: #4682B4; text-align: center;">
+        🏌️ HUGA Golf Score Manager
+    </h1>
+""", unsafe_allow_html=True)
+
 st.write("한양대학교 92 도시공학과 골프동호회 스코어 관리")
 
 # 모바일 웹 앱 메타데이터 추가
