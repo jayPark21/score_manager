@@ -2200,8 +2200,19 @@ def display_score_calculation_page():
         
         st.write("스코어 입력하기 버튼을 클릭하여 시작하세요.")
         return
+        
+    # 세션 상태에 인식 방법 저장
+    recognition_method = st.sidebar.radio(
+        "인식 방법",
+        options=["자동 인식", "수동 입력", "표 구조 인식"],
+        index=0,
+        help="스코어 인식 방법을 선택합니다",
+        key="recognition_method_radio"
+    )
     
-
+    # 세션 상태에 인식 방법 저장
+    st.session_state.recognition_method = recognition_method
+    
     # 사이드바 설정 - 시작 버튼을 클릭했을 때만 표시
     st.sidebar.title("OCR 설정")
     psm_option = st.sidebar.selectbox(
@@ -2280,16 +2291,6 @@ def display_score_calculation_page():
         key="use_improved_pipeline"
     )
     
-    recognition_method = st.sidebar.radio(
-        "인식 방법",
-        options=["자동 인식", "수동 입력", "표 구조 인식"],
-        index=0,
-        help="스코어 인식 방법을 선택합니다",
-        key="recognition_method_radio"
-    )
-    
-    # 세션 상태에 인식 방법 저장
-    st.session_state.recognition_method = recognition_method
     
     # 대회 회차 정보 입력 및 골프장소 입력 
     tournament_round, golf_location, tournament_date = load_tournament_info()
