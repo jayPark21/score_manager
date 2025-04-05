@@ -1764,9 +1764,9 @@ def display_player_records():
             tournament_count = len(data.get("tournaments", {}))
             
             records_data.append({
-                "순위": 0,
-                "이름": name,
-                "평균스코어": avg_score,
+                "순  위": 0,
+                "선수명": name,
+                "평  균": avg_score,
                 "핸디캡": handicap,
                 "참가대회수": tournament_count
             })
@@ -1779,17 +1779,17 @@ def display_player_records():
             records_df.at[idx, "순위"] = i + 1
                 
         # 테이블 표시 (인덱스 숨김)
-        final_df = records_df[["순위", "이름", "평균스코어", "핸디캡", "참가대회수"]].reset_index(drop=True)
+        final_df = records_df[["순위", "이름", "평균", "핸디캡", "참가대회수"]].reset_index(drop=True)
         # st.table(records_df)
         
         # 데이터프레임 소수점 형식 지정
         st.dataframe(
             final_df,
             column_config={
-                "평균스코어": st.column_config.NumberColumn(format="%.1f"),
+                "평균": st.column_config.NumberColumn(format="%.1f"),
                 "핸디캡": st.column_config.NumberColumn(format="%.1f")
             },
-            use_container_width=True    
+            use_container_width=Truehide_index=True    # 인덱스 컬럼 숨김 설정
         )
         
         # CSS 스타일 추가
