@@ -2050,7 +2050,7 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
         border-radius: 5px;
     }
     .winner-box {
-        background-color: #c5823e;
+        background-color: #ceb8a6;
         border: 2px solid #e6d72a;
         border-radius: 10px;
         padding: 15px;
@@ -2072,8 +2072,8 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
     """, unsafe_allow_html=True)
 
     # 간단한 대회 정보 헤더 표시
-    st.header(f"{tournament_round} 전체순위 결과", anchor=False)
-    st.subheader(f"날짜: {tournament_date}   |   장소: {golf_location}", anchor=False)
+    st.subheader(f"{tournament_round} 전체순위", anchor=False)
+    st.write(f"날짜: {tournament_date}  |  장소: {golf_location}", anchor=False)
 
     # 우승자 (전회 대회 대비 최저타수 득점자) 찾기
     if sorted_data:
