@@ -1630,16 +1630,7 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
                     max_value=150, 
                     key=f"total_score_{i}"
                 )
-            
-            # with col3:
-            #     handicap = st.number_input(
-            #         f"핸디캡", 
-            #         value=int(default_handicap), 
-            #         min_value=-30,
-            #         max_value=36, 
-            #         key=f"handicap_{i}"
-            #     )
-            
+                     
             # 전반/후반을 자동으로 분할 (반올림 처리)
             front_nine = total_score // 2
             back_nine = total_score - front_nine
@@ -1661,7 +1652,6 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
 
             # 이전 데이터 불러오기 (있는 경우에만)
             default_name = ""
-            # default_handicap = 0
             default_front = 36
             default_back = 36
 
@@ -1669,7 +1659,6 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
                 # 데이터 불러오기 오류 방지를 위한 예외 처리 추가
                 try:
                     default_name = st.session_state.saved_players[i].get('이름', "")
-                    # default_handicap = int(st.session_state.saved_players[i].get('핸디캡', 0))
                     default_front = int(st.session_state.saved_players[i].get('전반', 36))
                     default_back = int(st.session_state.saved_players[i].get('후반', 36))
                     
@@ -1723,7 +1712,6 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
             # 이름, 전반, 후반 스코어 저장 (스코어는 매번 다르므로)
             players_to_save =[{
                 '이름': p['이름'], 
-                # '핸디캡': p['핸디캡'],
                 '전반': p['전반'],
                 '후반': p['후반']
             } for p in player_data if p['이름']]
