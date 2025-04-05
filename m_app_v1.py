@@ -2027,7 +2027,7 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
         border-radius: 5px;
     }
     .winner-box {
-        background-color: #121212;
+        background-color: #fef19f;
         border: 2px solid #e6d72a;
         border-radius: 10px;
         padding: 15px;
@@ -2120,7 +2120,7 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
             margin-top: 25px;
             padding: 10px;
             border-radius: 5px;
-            background-color: #121212;
+            background-color: #aeadac;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         </style>
