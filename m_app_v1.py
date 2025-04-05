@@ -141,6 +141,15 @@ def add_mobile_css():
             margin-bottom: 15px;
             border: 2px solid #aaa !important;
         }
+
+        /* 메뉴와 컨텐츠 사이 분리선 스타일 */
+        .menu-content-divider {
+            height: 3px;
+            background: linear-gradient(to right, #4682B4, #87CEEB, #4682B4);
+            margin: 10px 0 20px 0;
+            border-radius: 2px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
         
         /* 모바일에서 사이드바 폭 줄이기 */
         @media (max-width: 768px) {
@@ -2493,6 +2502,11 @@ def main():
             st.session_state.page_select = selected_page
             
         st.markdown('</div>', unsafe_allow_html=True)
+
+    # 메뉴와 컨텐츠 사이에 분리선 추가
+    st.markdown("""
+    <div class="menu-content-divider"></div>
+    """, unsafe_allow_html=True)
 
     # 선택된 페이지에 따라 내용 표시
     content_placeholder = st.empty()
