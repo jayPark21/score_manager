@@ -14,7 +14,6 @@ from collections import defaultdict
 import json
 import platform
 import datetime
-import subprocess
 
 # 모바일 최적화를 위한 페이지 설정
 st.set_page_config(
