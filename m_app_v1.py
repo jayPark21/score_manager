@@ -1616,13 +1616,15 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
         
     # 컬럼 구성
     if input_mode == "총 스코어 입력":
+        st.write("선수 정보 입력")        
+        
         for i in range(players_count):
-            st.write(f"선수 {i+1}")
-            col1, col2 = st.columns(2)
+            
+            # st.write(f"선수 {i+1}")
+            # col1, col2 = st.columns(2)
 
             # 이전 데이터 불러오기 (있는 경우에만)
             default_name = ""
-            # default_handicap = 0
             default_total = 72  # 기본값 72
 
             if use_saved_players and i < len(st.session_state.saved_players):
@@ -1635,6 +1637,9 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
                     default_total = default_front + default_back
                 except Exception as e:
                     st.error(f"선수 {i+1} 데이터 불러오기 오류: {e}")
+
+            # 한 줄에 선수 이름과 총 스코어 필드를 나란히 배치
+            col1, col2 = st.columns([1, 1])
 
             with col1:
                 name = st.text_input(f"이름", value=default_name, key=f"name_input_{i}")
