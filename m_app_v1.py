@@ -410,7 +410,7 @@ def update_player_records(players_data, tournament_info):
         
     # 업데이트된 기록 저장
     success = save_player_records(records)
-    st.success("업데이트 성공")
+    # st.success("업데이트 성공")
     return records
 
 # =================== 이미지 처리 및 OCR 함수들 ===================
