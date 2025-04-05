@@ -1768,7 +1768,7 @@ def display_player_records():
         # 대회 횟수 표시 (오늘 날짜 기준)
         st.markdown(f"""
         <div style="margin-bottom: 20px; padding: 10px; background-color: #f0f2f6; border-radius: 5px; border-left: 3px solid #4682B4;">
-            <h3 style="margin: 0; font-size: 1.1rem;">- 금일({today}) 기준 제{len(all_tournaments)}차 대회 개최</h3>
+            <h3 style="margin: 0; font-size: 1.0rem;">금일({today}) 기준 제{len(all_tournaments)}차 대회 개최</h3>
         </div>
         """, unsafe_allow_html=True)
       
