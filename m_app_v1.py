@@ -2202,8 +2202,9 @@ def display_score_calculation_page():
         return
         
     # 세션 상태에 인식 방법 저장
+    st.sidebar.title("인식 방법")
     recognition_method = st.sidebar.radio(
-        "인식 방법",
+        # "인식 방법",
         options=["자동 인식", "수동 입력", "표 구조 인식"],
         index=0,
         help="스코어 인식 방법을 선택합니다",
