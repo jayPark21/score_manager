@@ -27,15 +27,6 @@ st.set_page_config(
 st.title("HUGA Golf Manager")
 st.write("한양대학교 92 도시공학과 골프동호회(HUGA) 골프스코어 관리 프로그램")
 
-# # 인라인 SVG 아이콘을 사용한 앱 아이콘 설정
-# icon_svg = """
-# <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-#     <rect width="100" height="100" rx="20" fill="#4682b4"/>
-#     <text x="50" y="75" font-size="60" text-anchor="middle" fill="white">🏌️</text>
-# </svg>
-# """
-# icon_b64 = base64.b64encode(icon_svg.encode("utf-8")).decode("utf-8")
-
 # 모바일 웹 앱 메타데이터 추가
 st.markdown("""
     <head>
@@ -45,10 +36,10 @@ st.markdown("""
         <meta name="apple-mobile-web-app-title" content="HUGA Golf Manager">
         <meta name="application-name" content="HUGA golf score manager">
         <meta name="theme-color" content="#4682b4">
-        # <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🏌️</text></svg>">
-        # <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🏌️</text></svg>">
-        <link rel="apple-touch-icon" href="data:image/svg+xml;base64,{icon_b64}">
-        <link rel="icon" href="data:image/svg+xml;base64,{icon_b64}">
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🏌️</text></svg>">
+        <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🏌️</text></svg>">
+        # <link rel="apple-touch-icon" href="data:image/svg+xml;base64,{icon_b64}">
+        # <link rel="icon" href="data:image/svg+xml;base64,{icon_b64}">
     </head>
 """, unsafe_allow_html=True)
 
@@ -2484,37 +2475,6 @@ def main():
     # 세션 상태 초기화
     init_session_state()
      
-    # CSS 스타일링 정의 - 테두리 강화
-    # st.markdown("""
-    # <style>
-    #     .big-font {
-    #         font-size: 24px !important;
-    #         font-weight: bold;
-    #     }
-    #     .menu-container {
-    #         background-color: #f0f2f6;
-    #         padding: 15px;
-    #         border-radius: 10px;
-    #         margin-bottom: 20px;
-    #         border: 2px solid #aaa !important;
-    #         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    #     }
-    #     .content-section {
-    #         margin-top: 30px;
-    #         padding-top: 20px;
-    #         border-top: 1px solid #eee;
-    #     }
-    #     /* 라디오 버튼을 더 크게 표시 */
-    #     .stRadio > div {
-    #         margin-top: 10px;
-    #     }
-    #     .stRadio label {
-    #         font-size: 18px !important;
-    #         font-weight: 500;
-    #     }
-    # </style>
-    # """, unsafe_allow_html=True)
-
     # 메뉴 선택 컨테이너
     with st.container():
         st.markdown('<div class="menu-container">', unsafe_allow_html=True)
