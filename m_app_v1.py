@@ -184,6 +184,23 @@ def add_mobile_css():
             height: 2rem !important;
             width: 2rem !important;
         }
+
+        /* 수동입력 필드 최적화 */
+         @media (max-width: 768px) {
+        .row-container {
+            display: flex;
+            flex-direction: row !important;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .name-field {
+            flex: 1;
+            margin-right: 8px;
+        }
+        .score-field {
+            flex: 1;
+        }
+    }
     </style>
     """, unsafe_allow_html=True)
 
