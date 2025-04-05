@@ -1408,7 +1408,7 @@ def mobile_manual_input():
         st.warning("선수 명단이 없습니다.")
     
     # 계산 버튼
-    if st.button("스코어 계산하기", key="calc_mobile", use_container_width=True, type="primary"):
+    if st.button("스코어 계산", key="calc_mobile", use_container_width=True, type="primary"):
         # 대회 정보 저장
         save_tournament_info(tournament_round, golf_location, tournament_date)
         
