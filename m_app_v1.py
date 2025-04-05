@@ -27,8 +27,8 @@ st.set_page_config(
 # st.title("HUGA Golf Score Manager")
 st.markdown("""
     <h2 style="font-size: 2.5rem; font-weight: 700; color: #4682B4; text-align: center;">
-        🏌️ HUGA Golf Score Manager
-    </h1>
+        🏌HUGA Golf Score Manager 
+    </h1> v1.0
 """, unsafe_allow_html=True)
 
 st.write("한양대학교 92 도시공학과 골프동호회 스코어 관리")
