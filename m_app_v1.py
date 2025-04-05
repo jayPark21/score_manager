@@ -26,7 +26,7 @@ st.set_page_config(
 
 # st.title("HUGA Golf Score Manager")
 st.markdown("""
-    <h2 style="font-size: 5.5rem; font-weight: 700; color: #4682B4; text-align: center;">
+    <h2 style="font-size: 2.5rem; font-weight: 700; color: #4682B4; text-align: center;">
         🏌️ HUGA Golf Score Manager
     </h1>
 """, unsafe_allow_html=True)
