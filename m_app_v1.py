@@ -1754,8 +1754,24 @@ def display_player_records():
         if not records:
             st.info("저장된 선수 기록이 없습니다.")
             return
-
-    
+  
+        # 전체 대회 수 계산
+        all_tournaments = set()
+        for name, data in records.items():
+            tournaments = data.get("tournaments", {})
+            for t_id in tournaments.keys():
+                all_tournaments.add(t_id)
+        
+        # 현재 날짜 가져오기
+        today = datetime.datetime.now().strftime("%Y/%m/%d")
+        
+        # 대회 횟수 표시 (오늘 날짜 기준)
+        st.markdown(f"""
+        <div style="margin-bottom: 20px; padding: 10px; background-color: #f0f2f6; border-radius: 5px; border-left: 3px solid #4682B4;">
+            <h3 style="margin: 0; font-size: 1.1rem;">- 금일({today}) 기준 제{len(all_tournaments)}차 대회 개최</h3>
+        </div>
+        """, unsafe_allow_html=True)
+      
         # 표로 표시할 데이터 준비
         records_data = []
         for name, data in records.items():
