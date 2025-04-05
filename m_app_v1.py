@@ -2472,7 +2472,10 @@ def main():
    
     # 세션 상태 초기화
     init_session_state()
-     
+
+    # CSS 스타일 적용 - 이 부분이 누락되어 있었습니다!
+    add_mobile_css()
+    
     # 메뉴 선택 컨테이너
     with st.container():
         st.markdown('<div class="menu-container">', unsafe_allow_html=True)
