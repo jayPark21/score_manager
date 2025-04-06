@@ -3121,7 +3121,7 @@ def manage_tournaments():
     # 대회삭제 섹션
     st.subheader("대회 삭제")
 
-    tournament_options = [(ID: {t['id']}) f"{t['round']}" for t in tournaments]
+    tournament_options = [f"(ID: {t['id']}) {t['round']}" for t in tournaments]
     
     tournament_to_delete = st.selectbox(
         "삭제할 대회 선택", 
@@ -3139,14 +3139,14 @@ def manage_tournaments():
         tournament_name = tournament_to_delete.split(" (ID:")[0]
       
         # 확인 체크박스 추가
-        delete_confirmation = st.checkbox((ID: {tournament_id}) f"{tournament_name} 대회를 정말 삭제하시겠습니까?", key="delete_confirmation")
+        delete_confirmation = st.checkbox(f"(ID: {tournament_id}) {tournament_name} 대회를 정말 삭제하시겠습니까?", key="delete_confirmation")
             
         if st.button("대회 삭제", key="execute_delete_tournament"):
             if not delete_confirmation:
                 st.warning("삭제 확인을 위해 체크박스를 선택해주세요.")
             elif tournament_id:
                 if delete_tournament(tournament_id):
-                    st.success((ID: {tournament_id}) f"{tournament_name}대회가 성공적으로 삭제되었습니다.")
+                    st.success(f"(ID: {tournament_id}) {tournament_name}대회가 성공적으로 삭제되었습니다.")
                     # 페이지 새로고침
                     st.rerun()
                 else:
