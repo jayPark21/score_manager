@@ -2504,7 +2504,7 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
         margin-top: 40px;
         margin-bottom: 20px;
         padding: 15px;
-        background-color: #121212;
+        background-color: #afafaf;
         border-left: 5px solid #4682B4;
         border-radius: 5px;
     }
