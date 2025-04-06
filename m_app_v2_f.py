@@ -3128,7 +3128,6 @@ def manage_tournaments():
         options=tournament_options,
         key="delete_tournament_select"
     )
-    st.write(options, ": ", tournament_to_delete)
     
    # 선택된 항목에서 ID 추출 (정규식 사용)
     import re
