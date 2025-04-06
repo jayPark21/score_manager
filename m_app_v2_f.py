@@ -3052,7 +3052,7 @@ def display_player_stats_page():
             border-radius: 5px;
             margin-top: 25px;
             margin-bottom: 15px;
-            border-left: 3px solid #4682b4;
+            border-left: 3px solid #97aabe;
         }
         .tournament-table {
             margin-top: 10px;
