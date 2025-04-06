@@ -3047,7 +3047,7 @@ def display_player_stats_page():
             margin-bottom: 30px;
         }
         .detail-header {
-            background-color: #121212;
+            background-color: #0f70d0;
             padding: 10px;
             border-radius: 5px;
             margin-top: 25px;
