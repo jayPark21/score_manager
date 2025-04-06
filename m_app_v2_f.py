@@ -2035,7 +2035,7 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
     player_data = []
         
     # 컬럼 구성
-    if input_mode == "총 스코어만 입력":
+    if input_mode == "총 스코어 입력":
         for i in range(players_count):
             st.write(f"선수 {i+1}")
             col1, col2 = st.columns(2)
