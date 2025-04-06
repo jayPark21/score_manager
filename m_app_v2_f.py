@@ -3410,11 +3410,11 @@ def merge_duplicate_tournaments():
         with get_db_connection() as conn:
             # 대회명별로 그룹화하여 중복 확인
             cursor = conn.execute('''
-            # SELECT tournament_round, location, COUNT(*) as count
-            SELECT tournament_round, COUNT(*) as count    
-            FROM tournaments
-            GROUP BY tournament_round, location
-            HAVING count > 1
+                # SELECT tournament_round, location, COUNT(*) as count
+                SELECT tournament_round, COUNT(*) as count    
+                FROM tournaments
+                GROUP BY tournament_round, location
+                HAVING count > 1
             ''')
             
             duplicates = cursor.fetchall()
@@ -3426,11 +3426,11 @@ def merge_duplicate_tournaments():
                 
                 # 해당 대회명/장소를 가진 모든 대회 조회
                 cursor = conn.execute('''
-                SELECT id, date
-                FROM tournaments
-                # WHERE tournament_round = ? AND location = ?
-                WHERE tournament_round = ? 
-                ORDER BY date DESC
+                    SELECT id, date
+                    FROM tournaments
+                    # WHERE tournament_round = ? AND location = ?
+                    WHERE tournament_round = ? 
+                    ORDER BY date DESC
                 # ''', (tournament_round, location))
                 ''', (tournament_round))
                 
@@ -3445,15 +3445,15 @@ def merge_duplicate_tournaments():
                         
                         # 스코어 데이터 이전
                         conn.execute('''
-                        UPDATE tournament_scores
-                        SET tournament_id = ?
-                        WHERE tournament_id = ?
+                            UPDATE tournament_scores
+                            SET tournament_id = ?
+                            WHERE tournament_id = ?
                         ''', (keep_id, old_id))
                         
                         # 중복 대회 삭제
                         conn.execute('''
-                        DELETE FROM tournaments
-                        WHERE id = ?
+                            DELETE FROM tournaments
+                            WHERE id = ?
                         ''', (old_id,))
                         
                         merged_count += 1
