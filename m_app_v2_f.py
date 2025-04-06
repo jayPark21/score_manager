@@ -1,5 +1,5 @@
 ################################################################################    
-# HUGA 골프스코어 매니저 v2.0 모바일 버전 - DB 연동 버전(real)
+# HUGA 골프스코어 매니저 v2.0 모바일 버전 - DB 연동 버전(final)
 ################################################################################
 
 import streamlit as st
@@ -3128,6 +3128,7 @@ def manage_tournaments():
         options=tournament_options,
         key="delete_tournament_select"
     )
+    st.write(options, ": ", tournament_to_delete)
     
    # 선택된 항목에서 ID 추출 (정규식 사용)
     import re
@@ -3483,7 +3484,7 @@ def display_admin_page():
         st.header("데이터베이스 관리")
         manage_database()
 
-    # 중복대회 병합합 탭
+    # 중복대회 병합 탭
     with tabs[3]:
         st.subheader("중복대회 병합")
         if st.button("중복 대회 자동 병합"):
