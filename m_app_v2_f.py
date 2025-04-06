@@ -3120,32 +3120,40 @@ def manage_tournaments():
     
     # 대회삭제 섹션
     st.subheader("대회 삭제")
+
+    tournament_options = [(ID: {t['id']}) f"{t['round']}" for t in tournaments]
     
     tournament_to_delete = st.selectbox(
         "삭제할 대회 선택", 
-        options=[t['round'] for t in tournaments],
+        options=tournament_options,
         key="delete_tournament_select"
     )
     
-    # 삭제할 대회 ID 찾기
-    tournament_id = next((t['id'] for t in tournaments if t['round'] == tournament_to_delete), None)
+   # 선택된 항목에서 ID 추출 (정규식 사용)
+    import re
+    tournament_id_match = re.search(r'ID: (\d+)', tournament_to_delete)
     
-    # 확인 체크박스 추가
-    delete_confirmation = st.checkbox(f"{tournament_to_delete} 대회를 정말 삭제하시겠습니까?", key="delete_confirmation")
-    
-    if st.button("대회 삭제", key="execute_delete_tournament"):
-        if not delete_confirmation:
-            st.warning("삭제 확인을 위해 체크박스를 선택해주세요.")
-        elif tournament_id:
-            if delete_tournament(tournament_id):
-                st.success(f"{tournament_to_delete} 대회가 성공적으로 삭제되었습니다.")
-                # 페이지 새로고침
-                st.rerun()
-                # st.success("페이지를 새로고침하려면 브라우저를 새로고침하세요.")
+    if tournament_id_match:
+        tournament_id = int(tournament_id_match.group(1))
+        tournament_name = tournament_to_delete.split(" (ID:")[0]
+      
+        # 확인 체크박스 추가
+        delete_confirmation = st.checkbox((ID: {tournament_id}) f"{tournament_name} 대회를 정말 삭제하시겠습니까?", key="delete_confirmation")
+            
+        if st.button("대회 삭제", key="execute_delete_tournament"):
+            if not delete_confirmation:
+                st.warning("삭제 확인을 위해 체크박스를 선택해주세요.")
+            elif tournament_id:
+                if delete_tournament(tournament_id):
+                    st.success((ID: {tournament_id}) f"{tournament_name}대회가 성공적으로 삭제되었습니다.")
+                    # 페이지 새로고침
+                    st.rerun()
+                else:
+                    st.error("대회 삭제 중 오류가 발생했습니다.")
             else:
-                st.error("대회 삭제 중 오류가 발생했습니다.")
-        else:
-            st.error("대회를 찾을 수 없습니다.")
+                st.error("대회를 찾을 수 없습니다.")
+    else:
+        st.error("대회 ID를 추출할 수 없습니다. 올바른 형식으로 선택해주세요.")
 
 def swap_tournament_dates(id1, id2):
     """두 대회의 날짜 교환하기"""
