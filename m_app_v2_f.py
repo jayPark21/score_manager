@@ -2254,7 +2254,7 @@ def display_player_records():
             margin-bottom: 30px;
         }
         .detail-header {
-            background-color: #98d1a2;
+            background-color: #93b4d1;
             padding: 10px;
             border-radius: 5px;
             margin-top: 25px;
