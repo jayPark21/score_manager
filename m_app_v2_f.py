@@ -2391,24 +2391,41 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
                     if player_row:
                         player_id = player_row['id']
                         
-                        # 현재 대회를 제외한 이전 대회 찾기
+                         # 대회 ID 찾기 또는 저장하기
                         cursor = conn.execute('''
-                        SELECT ts.total_score, t.date
-                        FROM tournament_scores ts
-                        JOIN tournaments t ON ts.tournament_id = t.id
-                        WHERE ts.player_id = ? AND t.tournament_round != ?
-                        ORDER BY t.date DESC
-                        LIMIT 1
-                        ''', (player_id, tournament_round))
+                        SELECT id FROM tournaments 
+                        WHERE tournament_round = ? AND date = ?
+                        ''', (tournament_round, tournament_date))
                         
-                        prev_tournament = cursor.fetchone()
+                        tournament_row = cursor.fetchone()
                         
-                        if prev_tournament:
-                            player['전회스코어'] = prev_tournament['total_score']
-                            player['스코어차이'] = player['최종스코어'] - player['전회스코어']
+                        if tournament_row:
+                            tournament_id = tournament_row['id']
+                            
+                            # compare_with_previous_tournament 함수 사용
+                            prev_score, diff = compare_with_previous_tournament(tournament_id, player_id)
+                            
+                            if prev_score:
+                                player['전회스코어'] = prev_score
+                                player['스코어차이'] = diff
+                            else:
+                                player['전회스코어'] = 0
+                                player['스코어차이'] = 0
                         else:
-                            player['전회스코어'] = 0
-                            player['스코어차이'] = 0
+                            # 대회 정보가 없으면 저장 후 ID 받기
+                            tournament_id = save_tournament_info(tournament_round, golf_location, tournament_date)
+                            if tournament_id:
+                                prev_score, diff = compare_with_previous_tournament(tournament_id, player_id)
+                                
+                                if prev_score:
+                                    player['전회스코어'] = prev_score
+                                    player['스코어차이'] = diff
+                                else:
+                                    player['전회스코어'] = 0
+                                    player['스코어차이'] = 0
+                            else:
+                                player['전회스코어'] = 0
+                                player['스코어차이'] = 0
                     else:
                         player['전회스코어'] = 0
                         player['스코어차이'] = 0
@@ -2416,33 +2433,8 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
                 st.warning(f"이전 대회 기록 조회 중 오류: {str(e)}")
                 player['전회스코어'] = 0
                 player['스코어차이'] = 0
-            #     tournaments = player_records[name].get("tournaments", {})
-        #     previous_tournaments = sorted(
-        #         [t for t_id, t in tournaments.items() if t_id != f"{tournament_round}_{tournament_date}"],
-        #         key=lambda x: x.get("date", ""),
-        #         reverse=True
-        #     )
-            
-        #     if previous_tournaments:
-        #         last_tournament = previous_tournaments[0]
-        #         player['전회스코어'] = last_tournament.get('total_score', 0)
-        #         player['스코어차이'] = player['최종스코어'] - player['전회스코어']
-        #     else:
-        #         player['전회스코어'] = 0
-        #         player['스코어차이'] = 0
-        # else:
-            # 기본값 설정
-            if '평균스코어' not in player:
-                player['평균스코어'] = 0
-            if '핸디캡' not in player:
-                player['핸디캡'] = 0
-            if '최종스코어' in player and '네트점수' not in player:
-                player['네트점수'] = player['최종스코어'] - player.get('핸디캡', 0)
 
-            player['전회스코어'] = 0
-            player['스코어차이'] = 0
-  
-    # 최종스코어 기준 정렬 (요구사항 3: 최종스코어순으로 정렬)
+# 최종스코어 기준 정렬 (요구사항 3: 최종스코어순으로 정렬)
     sorted_data = sorted(players_data, key=lambda x: x.get('최종스코어', 999))
     score_key = '최종스코어'
    
@@ -2992,7 +2984,7 @@ def display_player_stats_page():
             margin-bottom: 30px;
         }
         .detail-header {
-            background-color: #121212;
+            background-color: #98d1a2;
             padding: 10px;
             border-radius: 5px;
             margin-top: 25px;
