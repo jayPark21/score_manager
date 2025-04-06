@@ -630,7 +630,7 @@ def get_all_tournaments():
             cursor = conn.execute('''
             SELECT id, tournament_round, location, date
             FROM tournaments
-            ORDER BY date DESC
+            ORDER BY id DESC
             ''')
             
             tournaments = []
@@ -3410,7 +3410,8 @@ def merge_duplicate_tournaments():
         with get_db_connection() as conn:
             # 대회명별로 그룹화하여 중복 확인
             cursor = conn.execute('''
-            SELECT tournament_round, location, COUNT(*) as count
+            # SELECT tournament_round, location, COUNT(*) as count
+            SELECT tournament_round, COUNT(*) as count    
             FROM tournaments
             GROUP BY tournament_round, location
             HAVING count > 1
@@ -3421,15 +3422,17 @@ def merge_duplicate_tournaments():
             merged_count = 0
             for dup in duplicates:
                 tournament_round = dup['tournament_round']
-                location = dup['location']
+                # location = dup['location']
                 
                 # 해당 대회명/장소를 가진 모든 대회 조회
                 cursor = conn.execute('''
                 SELECT id, date
                 FROM tournaments
-                WHERE tournament_round = ? AND location = ?
+                # WHERE tournament_round = ? AND location = ?
+                WHERE tournament_round = ? 
                 ORDER BY date DESC
-                ''', (tournament_round, location))
+                # ''', (tournament_round, location))
+                ''', (tournament_round))
                 
                 tournaments = cursor.fetchall()
                 
