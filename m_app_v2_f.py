@@ -3138,7 +3138,7 @@ def manage_tournaments():
         tournament_name = tournament_to_delete.split(" (ID:")[0]
       
         # 확인 체크박스 추가
-        delete_confirmation = st.checkbox(f"(ID: {tournament_id}) {tournament_name} 대회를 정말 삭제하시겠습니까?", key="delete_confirmation")
+        delete_confirmation = st.checkbox(f"(ID: {tournament_id}) {tournament_name} 를 정말 삭제하시겠습니까?", key="delete_confirmation")
             
         if st.button("대회 삭제", key="execute_delete_tournament"):
             if not delete_confirmation:
