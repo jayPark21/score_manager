@@ -2310,7 +2310,7 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
             col1, col2 = st.columns([1, 1])
 
             with col1:
-                name = st.text_input(f"이름", value=default_name, key=f"name_input_{i}")
+                name = st.text_input("이름", value=default_name, key=f"name_input_{i}")
             
             with col2:
                 total_score = st.number_input(
