@@ -596,7 +596,7 @@ def update_player_records(players_data, tournament_info):
     """선수 기록 업데이트 - SQLite 버전"""
     
     # 디버깅 로그 추가
-    st.write(f"업데이트 시도: {len(players_data)}명의 선수 데이터, 대회 정보: {tournament_info}")
+    # st.write(f"업데이트 시도: {len(players_data)}명의 선수 데이터, 대회 정보: {tournament_info}")
     
     # 대회 정보 저장하고 ID 받기
     tournament_id = save_tournament_info(
@@ -606,12 +606,12 @@ def update_player_records(players_data, tournament_info):
     )
 
     # 디버깅 로그 추가
-    st.write(f"대회 ID: {tournament_id}")
+    # st.write(f"대회 ID: {tournament_id}")
     
     # 대회 ID가 있으면 스코어 저장
     if tournament_id:
         result = save_tournament_scores(tournament_id, players_data)
-        st.write(f"스코어 저장 결과: {result}")
+        # st.write(f"스코어 저장 결과: {result}")
         return result
         
     st.error("대회 ID를 가져오지 못했습니다.")
@@ -2844,7 +2844,6 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
                 '총스코어': final_score,
                 '평균타수': avg_score,
                 '핸디캡': handicap,
-                # '네트점수': net_score,
                 '전회스코어': prev_score if prev_score > 0 else "-",
                 '타수차': score_diff if prev_score > 0 else "-"
              })
@@ -3379,7 +3378,8 @@ def display_player_stats_page():
                 "평균스코어": st.column_config.NumberColumn(format="%.1f"),
                 "핸디캡": st.column_config.NumberColumn(format="%.1f")
             },
-            use_container_width=True    
+            use_container_width=True
+            hide_index=True
         )
         
         # CSS 스타일 추가
@@ -3399,6 +3399,13 @@ def display_player_stats_page():
         }
         .tournament-table {
             margin-top: 10px;
+        }
+        /* 테이블 인덱스 숨김 스타일 추가 */
+        .dataframe th:first-child {
+            display: none;
+        }
+        .dataframe td:first-child {
+            display: none;
         }
         </style>
         """, unsafe_allow_html=True)
@@ -3979,7 +3986,7 @@ def display_admin_page():
     st.title("관리자 도구")
     
     # DB 파일 정보 표시
-    st.write(f"DB 파일 경로: {os.path.abspath(DB_PATH)}")
+    # st.write(f"DB 파일 경로: {os.path.abspath(DB_PATH)}")
     
     if os.path.exists(DB_PATH):
         st.success(f"DB 파일 크기: {os.path.getsize(DB_PATH)/1024:.2f} KB")
