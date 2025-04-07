@@ -2864,6 +2864,13 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
             background-color: #aeadac;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
+        /* 인덱스 열 숨김 스타일 */
+        .dataframe th:first-child {
+            display: none !important;
+        }
+        .dataframe td:first-child {
+            display: none !important;
+        }
         </style>
         <div class="dataframe-container">
         <h3>📊 전체 순위표</h3>
@@ -3435,7 +3442,12 @@ def display_player_stats_page():
                         tournament_df = tournament_df.sort_values(by="날짜", ascending=False)
 
                     st.markdown('<div class="tournament-table">', unsafe_allow_html=True)
-                    st.table(tournament_df.reset_index(drop=True))  #reset_index로 인덱스 리셋
+                    # 테이블 표시 (인덱스 숨김)
+                    st.dataframe(
+                        tournament_df,
+                        use_container_width=True,
+                        hide_index=True  # 인덱스 숨김 설정
+                    )
                     st.markdown('</div>', unsafe_allow_html=True)
                 else:
                     st.info("아직 대회 기록이 없습니다.")
