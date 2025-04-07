@@ -3460,26 +3460,26 @@ def display_admin_page():
     st.title("관리자 도구")
     
     # 탭 추가
-    tabs = st.tabs(["대회 관리", "선수 관리", "데이터베이스 관리", "중복대회 병합"])
+    tabs = st.tabs(["대회 관리", "선수 관리", "데이터베이스 관리", "중복대회 관리리"])
     
     # 대회 관리 탭
     with tabs[0]:
-        st.header("대회 관리")
+        # st.header("대회 관리")
         manage_tournaments()
     
     # 선수 관리 탭
     with tabs[1]:
-        st.header("선수 관리")
+        # st.header("선수 관리")
         manage_players()
     
     # 데이터베이스 관리 탭
     with tabs[2]:
-        st.header("데이터베이스 관리")
+        # st.header("데이터베이스 관리")
         manage_database()
 
     # 중복대회 병합 탭
     with tabs[3]:
-        st.header("중복대회 관리")
+        # st.header("중복대회 관리")
         st.subheader("중복대회 자동 병합")
         st.warning("같은 대회명을 가진 대회들을 자동으로 병합합니다. 가장 최근 날짜의 대회가 유지됩니다.")
         
