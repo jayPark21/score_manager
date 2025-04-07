@@ -1761,59 +1761,74 @@ def simplified_manual_input(saved_players):
     
     # 폼 컨텍스트로 감싸기
     with st.form(key="manual_input_form"):
-        # 컬럼 헤더 표시
-        st.markdown('<div class="score-table-header">', unsafe_allow_html=True)
-        col1, col2 = st.columns([3, 2])
-        with col1:
-            st.markdown('<strong>선수명</strong>', unsafe_allow_html=True)
-        with col2:
-            st.markdown('<strong>총스코어</strong>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        # 헤더 추가
+        st.subheader("선수 스코어 입력")
+        st.write("각 선수의 이름과 총스코어를 입력하세요.")
         
         # 구분선 추가
-        st.markdown('<hr style="margin: 0; border-top: 2px solid #ccc;">', unsafe_allow_html=True)
+        st.markdown('<hr style="margin: 5px 0 15px 0;">', unsafe_allow_html=True)
+
+        # 선수 수 설정 (기본값 또는 이전 값 사용)
+        default_count = len(saved_players) if saved_players else 12
+        player_count = st.number_input(
+            "인원수", 
+            min_value=1, 
+            max_value=20, 
+            value=default_count,
+            key="player_count"
+        )
         
+        # 구분선 추가
+        st.markdown('<hr style="margin: 15px 0;">', unsafe_allow_html=True)
+          
         # 각 선수별 행 생성
-        for i, player in enumerate(saved_players):
-            player_name = player.get('이름', f"선수 {i+1}")
+        for i, player in range(player_count):
+            # 기본값 설정
+            default_name = ""
+            default_total = 72
             
-            # 기본값 설정 (이전 전반+후반 또는 기본값 72)
-            try:
-                default_front = int(player.get('전반', 36))
-                default_back = int(player.get('후반', 36))
-                default_total = default_front + default_back
-            except (ValueError, TypeError):
-                default_total = 72
-            
-            # 컬럼으로 선수명과 스코어 입력 필드 배치
-            col1, col2 = st.columns([3, 2])
+            # 이전 데이터가 있으면 사용
+            if i < len(saved_players):
+                try:
+                    default_name = saved_players[i].get('이름', "")
+                    default_front = int(saved_players[i].get('전반', 36))
+                    default_back = int(saved_players[i].get('후반', 36))
+                    default_total = default_front + default_back
+                except (ValueError, TypeError):
+                    pass
+                    
+            # 한 줄에  선수명과 스코어 입력 필드 배치
+            col1, col2 = st.columns(2)
             
             with col1:
-                st.markdown(f"<strong>{player_name}</strong>", unsafe_allow_html=True)
+                name = st.text_input(
+                    "이름", 
+                    value=default_name, 
+                    key=f"name_{i}",
+                    placeholder="선수 이름"
+                )
             
             with col2:
                 total_score = st.number_input(
-                    f"",  # 라벨 비워두기
+                    "총스코어", 
                     min_value=0, 
                     max_value=150, 
                     value=int(default_total),
-                    key=f"simple_total_{i}"
+                    key=f"total_{i}"
                 )
             
-            # 구분선 추가
-            st.markdown('<hr style="margin: 5px 0; border-top: 1px solid #eee;">', unsafe_allow_html=True)
-
             # 전반/후반 자동 계산
             front_nine = total_score // 2
             back_nine = total_score - front_nine
              
             # 데이터 저장
-            manual_data.append({
-                '이름': player_name,
-                '전반': front_nine,
-                '후반': back_nine,
-                '총스코어': total_score,
-            })
+            if name.strip():  # 이름이 비어있지 않은 경우만 저장
+                manual_data.append({
+                    '이름': player_name,
+                    '전반': front_nine,
+                    '후반': back_nine,
+                    '총스코어': total_score,
+                })
         
         # 스코어 계산 버튼 추가 - 시각적으로 강조
         st.markdown('<div style="margin-top: 20px;">', unsafe_allow_html=True)
@@ -1866,67 +1881,80 @@ def simplified_manual_input_mobile(saved_players):
     
     # 폼 컨텍스트로 감싸기
     with st.form(key="manual_input_form"):
-        # 컬럼 헤더 표시
-        # st.markdown('<div class="score-table-header">', unsafe_allow_html=True)
-        col1, col2 = st.columns([3, 2])
-        with col1:
-            st.markdown('<strong>선수명</strong>', unsafe_allow_html=True)
-        with col2:
-            st.markdown('<strong>총스코어</strong>', unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+        # 간략한 헤더
+        st.write("📝 선수 스코어 입력")
+       
+        # 인원수 설정 (기본값 또는 이전 값 사용)
+        default_count = len(saved_players) if saved_players else 12
+        player_count = st.number_input(
+            "선수 수", 
+            min_value=1, 
+            max_value=20, 
+            value=default_count,
+            key="mobile_player_count"
+        )
         
-        # 구분선 추가
-        st.markdown('<hr>', unsafe_allow_html=True)
-             
+            
         # 각 선수별 행 생성
-        for i, player in enumerate(saved_players):
-            player_name = player.get('이름', f"선수 {i+1}")
+        for i, player in range(player_count):
+            # 기본값 설정
+            default_name = ""
+            default_total = 72
+         
+            # 이전 데이터가 있으면 사용
+            if i < len(saved_players):
+                try:
+                    default_name = saved_players[i].get('이름', "")
+                    default_front = int(saved_players[i].get('전반', 36))
+                    default_back = int(saved_players[i].get('후반', 36))
+                    default_total = default_front + default_back
+                except (ValueError, TypeError):
+                    pass
             
-            # 기본값 설정 (이전 전반+후반 또는 기본값 72)
-            try:
-                default_front = int(player.get('전반', 36))
-                default_back = int(player.get('후반', 36))
-                default_total = default_front + default_back
-            except (ValueError, TypeError):
-                default_total = 72
-            
-            # 컬럼으로 선수명과 스코어 입력 필드 배치
-            col1, col2 = st.columns([3, 2])
+            st.markdown(f'<div class="row-container">', unsafe_allow_html=True)
+              
+            # 한 줄에 선수명과 스코어 입력 필드 배치
+            col1, col2 = st.columns(2)
             
             with col1:
-                st.markdown(f"<div class='player-name'>{player_name}</div>", unsafe_allow_html=True)
+                name = st.text_input(
+                    "이름", 
+                    value=default_name, 
+                    key=f"mobile_name_{i}",
+                    placeholder="선수 이름"
+                )
             
             with col2:
                 total_score = st.number_input(
-                    f"",  # 라벨 비워두기
+                    "총스코어", 
                     min_value=0, 
                     max_value=150, 
                     value=int(default_total),
-                    key=f"mobile_score_{i}",
-                    help=f"{player_name}의 총스코어"
+                    key=f"mobile_total_{i}"
                 )
+            
+            st.markdown('</div>', unsafe_allow_html=True)
             
             # 전반/후반 자동 계산
             front_nine = total_score // 2
             back_nine = total_score - front_nine
             
             # 데이터 저장
-            manual_data.append({
-                '이름': player_name,
-                '전반': front_nine,
-                '후반': back_nine,
-                '총스코어': total_score,
-            })
+            if name.strip():  # 이름이 비어있지 않은 경우만 저장
+                manual_data.append({
+                    '이름': player_name,
+                    '전반': front_nine,
+                    '후반': back_nine,
+                    '총스코어': total_score,
+                })
 
       
         # 제출 버튼 추가 - 시각적으로 강조
-        st.markdown('<div style="margin-top: 20px;">', unsafe_allow_html=True)
         submit_button = st.form_submit_button(
             label="스코어 계산",
             use_container_width=True,
             type="primary"
         )
-        st.markdown('</div>', unsafe_allow_html=True)
         
         if submit_button:
             is_submitted = True
