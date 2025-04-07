@@ -525,10 +525,15 @@ def save_tournament_scores(tournament_id, players_data):
         return True
     except Exception as e:
         st.error(f"대회 스코어 저장 오류: {e}")
+        import traceback
+        st.error(traceback.format_exc())
         return False
 
 def update_player_records(players_data, tournament_info):
     """선수 기록 업데이트 - SQLite 버전"""
+    
+    # 디버깅 로그 추가
+    st.write(f"업데이트 시도: {len(players_data)}명의 선수 데이터, 대회 정보: {tournament_info}")
     
     # 대회 정보 저장하고 ID 받기
     tournament_id = save_tournament_info(
@@ -536,12 +541,18 @@ def update_player_records(players_data, tournament_info):
         tournament_info.get('location', ''),
         tournament_info.get('date', '')
     )
+
+    # 디버깅 로그 추가
+    st.write(f"대회 ID: {tournament_id}")
     
     # 대회 ID가 있으면 스코어 저장
     if tournament_id:
-        return save_tournament_scores(tournament_id, players_data)
+        result = save_tournament_scores(tournament_id, players_data)
+        st.write(f"스코어 저장 결과: {result}")
+        return result
+        
+    st.error("대회 ID를 가져오지 못했습니다.")
     return False
-
 
 # 선수별 통계 및 기록 조회
 def get_player_statistics():
@@ -3258,7 +3269,77 @@ def manage_database():
     
     if st.button("데이터베이스 백업 다운로드"):
         export_database()
+        
+def check_database_status():
+    """데이터베이스 상태를 확인하는 함수"""
+    try:
+        with get_db_connection() as conn:
+            # 1. 대회 테이블 확인
+            cursor = conn.execute('SELECT COUNT(*) as count FROM tournaments')
+            tournament_count = cursor.fetchone()['count']
+            
+            # 2. 스코어 테이블 확인
+            cursor = conn.execute('SELECT COUNT(*) as count FROM tournament_scores')
+            score_count = cursor.fetchone()['count']
+            
+            # 3. 최근 10개 스코어 기록 확인
+            cursor = conn.execute('''
+                SELECT ts.id, p.name, t.tournament_round, t.date, ts.total_score, ts.created_at
+                FROM tournament_scores ts
+                JOIN players p ON ts.player_id = p.id
+                JOIN tournaments t ON ts.tournament_id = t.id
+                ORDER BY ts.created_at DESC
+                LIMIT 10
+            ''')
+            recent_scores = cursor.fetchall()
+            
+            return {
+                'tournament_count': tournament_count,
+                'score_count': score_count,
+                'recent_scores': [dict(row) for row in recent_scores]
+            }
+    except Exception as e:
+        return {'error': str(e)}
 
+def verify_score_saving():
+    """스코어 저장 검증 함수"""
+    st.subheader("스코어 저장 검증")
+    
+    if st.button("최근 스코어 확인"):
+        try:
+            with get_db_connection() as conn:
+                # 최근 저장된 스코어 확인
+                cursor = conn.execute('''
+                SELECT 
+                    p.name as 선수명,
+                    t.tournament_round as 대회명,
+                    t.date as 날짜,
+                    ts.front_nine as 전반,
+                    ts.back_nine as 후반,
+                    ts.total_score as 총점,
+                    ts.created_at as 저장시간
+                FROM tournament_scores ts
+                JOIN players p ON ts.player_id = p.id
+                JOIN tournaments t ON ts.tournament_id = t.id
+                ORDER BY ts.created_at DESC
+                LIMIT 20
+                ''')
+                
+                scores = cursor.fetchall()
+                
+                if scores:
+                    # 데이터프레임으로 변환
+                    scores_df = pd.DataFrame([dict(row) for row in scores])
+                    st.dataframe(scores_df)
+                    st.success(f"최근 {len(scores)}개의 스코어 기록이 확인되었습니다.")
+                else:
+                    st.warning("저장된 스코어 기록이 없습니다.")
+                    
+        except Exception as e:
+            st.error(f"스코어 검증 오류: {e}")
+            import traceback
+            st.error(traceback.format_exc())
+            
 def update_player_stats_view():
     """player_stats 뷰 수정 - 소수점 1자리 반올림"""
     try:
@@ -3466,7 +3547,7 @@ def display_admin_page():
     st.title("관리자 도구")
     
     # 탭 추가
-    tabs = st.tabs(["대회 관리", "선수 관리", "데이터베이스 관리", "중복대회 관리리"])
+    tabs = st.tabs(["대회 관리", "선수 관리", "데이터베이스 관리", "중복대회 관리", "DB 상태 확인"])
     
     # 대회 관리 탭
     with tabs[0]:
@@ -3518,6 +3599,23 @@ def display_admin_page():
                             st.rerun()  # 페이지 새로고침
                         else:
                             st.error("병합 중 오류가 발생했습니다.")
+    # DB 상태 확인 탭 추가
+    with tabs[4]:
+        st.header("DB 상태 확인")
+        if st.button("DB 상태 새로고침"):
+            db_status = check_database_status()
+            if 'error' in db_status:
+                st.error(f"DB 확인 오류: {db_status['error']}")
+            else:
+                st.write(f"대회 수: {db_status['tournament_count']}")
+                st.write(f"스코어 기록 수: {db_status['score_count']}")
+                
+                st.subheader("최근 스코어 기록")
+                if db_status['recent_scores']:
+                    scores_df = pd.DataFrame(db_status['recent_scores'])
+                    st.dataframe(scores_df)
+                else:
+                    st.info("최근 스코어 기록이 없습니다.")   
 
 def main():
 
