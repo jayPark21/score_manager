@@ -2287,8 +2287,8 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
         
     # 컬럼 구성
     if input_mode == "총스코어 입력":
-        for i in range(players_count):
-            st.write(f"선수 {i+1}")
+        for ix in range(players_count):
+            # st.write(f"선수 {i+1}")
             col1, col2 = st.columns(2)
 
             # 이전 데이터 불러오기 (있는 경우에만)
@@ -2310,7 +2310,7 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
             col1, col2 = st.columns([1, 1])
 
             with col1:
-                name = st.text_input(f"이름", value=default_name, key=f"name_input_{i}")
+                name = st.text_input(f"선수 {ix+1} : ", "이름", value=default_name, key=f"name_input_{i}")
             
             with col2:
                 total_score = st.number_input(
