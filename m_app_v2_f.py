@@ -3385,7 +3385,7 @@ def display_player_stats_page():
                 "평균스코어": st.column_config.NumberColumn(format="%.1f"),
                 "핸디캡": st.column_config.NumberColumn(format="%.1f")
             },
-            use_container_width=True
+            use_container_width=True,
             hide_index=True
         )
         
