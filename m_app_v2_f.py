@@ -2775,7 +2775,7 @@ def display_score_calculation_page():
         tournament_round = st.text_input(
             "대회 회차",
             value=tournament_round,
-            placeholder="예: 제3차 UGA 대회",
+            placeholder="예: 제3차 대회",
             help="대회 회차를 입력하세요. 결과 출력 시 표시됩니다.",
             key="tournament_round_input"
         )
