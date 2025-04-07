@@ -564,10 +564,10 @@ def get_player_statistics():
             for row in cursor.fetchall():
                 # 평균 스코어 반올림 및 핸디캡 계산
                 avg_score = round(row['avg_score'], 1) if row['avg_score'] is not None else 0
-                if avg_score < 100:
+                if avg_score < 100 and avg_score > 60:
                     handicap = round(avg_score, 1)
                 else:
-                    handicap = 100
+                   handicap = 0 if avg_score == 0 else 100  # 스코어가 0이면 핸디캡도 0
                 
                 stats.append({
                     'id': row['id'],
@@ -3008,8 +3008,19 @@ def display_player_stats_page():
                     "참가대회수": player['참가대회수']
                 })
                 
+       # 데이터가 없는 경우 처리
+        if not records_data:
+            st.info("대회 참가 기록이 있는 선수가 없습니다.")
+            return
+ 
         # 평균 스코어 기준으로 정렬
-        records_df = pd.DataFrame(records_data).sort_values(by="평균스코어")
+        try:
+            records_df = pd.DataFrame(records_data).sort_values(by="평균스코어")
+        except KeyError:
+            # 정렬 키가 없는 경우 정렬 없이 데이터프레임 생성
+            records_df = pd.DataFrame(records_data)
+            st.warning("스코어 데이터 정렬 중 문제가 발생했습니다. 정렬 없이 표시합니다.")
+        
         
         # 순위 업데이트 (1부터 시작)
         for i, idx in enumerate(records_df.index):
@@ -3028,11 +3039,6 @@ def display_player_stats_page():
             use_container_width=True    
         )
         
-        # 표시할 선수가 없는 경우
-        if len(records_data) == 0:
-            st.info("대회 참가 기록이 있는 선수 명단이 없습니다.")
-            return
-
         # CSS 스타일 추가
         st.markdown("""
         <style>
