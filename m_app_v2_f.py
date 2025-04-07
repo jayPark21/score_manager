@@ -317,12 +317,7 @@ def save_tournament_info(tournament_round, golf_location="", tournament_date=Non
             tournament_date = datetime.datetime.now().strftime("%Y-%m-%d")
         
         with get_db_connection() as conn:
-            # # 먼저 테이블이 존재하는지 확인
-            # cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='tournaments'")
-            # if not cursor.fetchone():
-            #     # tournaments 테이블이 없으면 생성
-            #     init_database()
-            
+           
             # 이미 존재하는 동일한 라운드 정보 확인
             cursor = conn.execute('''
             SELECT id FROM tournaments 
@@ -333,18 +328,16 @@ def save_tournament_info(tournament_round, golf_location="", tournament_date=Non
             existing = cursor.fetchone()
             
             if existing:
-                # 날짜가 같으면 해당 ID 반환, 다르면 업데이트
-                # 'date' 키가 있는지 안전하게 확인
-                if existing and 'date' in existing.keys() and existing['date'] == tournament_date:
-                    tournament_id = existing['id']
-                else:
-                    # 같은 대회명/장소에 날짜만 다른 경우 날짜 업데이트
-                    conn.execute('''
-                    UPDATE tournaments 
-                    SET date = ?
-                    WHERE id = ?
-                    ''', (tournament_date, existing['id']))
-                    tournament_id = existing['id']
+                # 기존 대회 ID 반환
+                tournament_id = existing['id']
+
+                # 날짜 다른 경우 날짜 업데이트
+                conn.execute('''
+                UPDATE tournaments 
+                SET date = ?
+                WHERE id = ?
+                ''', (tournament_date, existing['id']))
+                conn.commit()
             else:
                 # 새 항목 추가
                 cursor = conn.execute('''
@@ -352,9 +345,10 @@ def save_tournament_info(tournament_round, golf_location="", tournament_date=Non
                 VALUES (?, ?, ?)
                 ''', (tournament_round, golf_location, tournament_date))
                 tournament_id = cursor.lastrowid
+                conn.commit()
             
-            conn.commit()
             return tournament_id
+            
     except Exception as e:
         st.error(f"대회 정보 저장 오류: {e}")
         import traceback
@@ -3410,11 +3404,11 @@ def merge_duplicate_tournaments():
         with get_db_connection() as conn:
             # 대회명별로 그룹화하여 중복 확인
             cursor = conn.execute('''
-                SELECT tournament_round, COUNT(*) as count    
-                FROM tournaments
-                GROUP BY tournament_round, location
-                HAVING count > 1
-            ''')
+            SELECT tournament_round, COUNT(*) as count    
+            FROM tournaments
+            GROUP BY tournament_round, location
+            HAVING count > 1
+        ''')
             
             duplicates = cursor.fetchall()
             
@@ -3423,12 +3417,12 @@ def merge_duplicate_tournaments():
                 tournament_round = dup['tournament_round']
                 # location = dup['location']
                 
-                # 해당 대회명/장소를 가진 모든 대회 조회
+                # 해당 대회명를 가진 모든 대회 조회
                 cursor = conn.execute('''
-                    SELECT id, date
-                    FROM tournaments
-                    WHERE tournament_round = ? 
-                    ORDER BY date DESC
+                SELECT id, date
+                FROM tournaments
+                WHERE tournament_round = ? 
+                ORDER BY date DESC
                 ''', (tournament_round))
                 
                 tournaments = cursor.fetchall()
@@ -3442,15 +3436,15 @@ def merge_duplicate_tournaments():
                         
                         # 스코어 데이터 이전
                         conn.execute('''
-                            UPDATE tournament_scores
-                            SET tournament_id = ?
-                            WHERE tournament_id = ?
-                        ''', (keep_id, old_id))
+                        UPDATE tournament_scores
+                        SET tournament_id = ?
+                        WHERE tournament_id = ?
+                    ''', (keep_id, old_id))
                         
                         # 중복 대회 삭제
                         conn.execute('''
-                            DELETE FROM tournaments
-                            WHERE id = ?
+                        DELETE FROM tournaments
+                        WHERE id = ?
                         ''', (old_id,))
                         
                         merged_count += 1
@@ -3485,14 +3479,39 @@ def display_admin_page():
 
     # 중복대회 병합 탭
     with tabs[3]:
-        st.subheader("중복대회 병합")
-        if st.button("중복 대회 자동 병합"):
-            merged_count = merge_duplicate_tournaments()
-            if merged_count > 0:
-                st.success(f"{merged_count}개 중복 대회를 성공적으로 병합했습니다.")
-                st.rerun()  # 페이지 새로고침
-            else:
-                st.info("병합할 중복 대회가 없습니다.")
+        st.header("중복대회 관리")
+        st.subheader("중복대회 자동 병합")
+        st.warning("같은 대회명을 가진 대회들을 자동으로 병합합니다. 가장 최근 날짜의 대회가 유지됩니다.")
+        
+        if st.button("중복 대회 자동 병합", key="check_duplicate_tournaments"):
+            # 먼저 중복 대회 검사
+            with get_db_connection() as conn:
+                cursor = conn.execute('''
+                    SELECT tournament_round, location, COUNT(*) as count    
+                    FROM tournaments
+                    GROUP BY tournament_round, location
+                    HAVING count > 1
+                ''')
+                
+                duplicates = cursor.fetchall()
+                
+                if not duplicates:
+                    st.success("중복된 대회가 없습니다!")
+                else:
+                    st.warning(f"{len(duplicates)}개의 중복 대회 그룹이 발견되었습니다.")
+
+                    # 중복 목록 표시
+                    for dup in duplicates:
+                        st.write(f"대회명: {dup['tournament_round']}, 중복 수: {dup['count']}개")
+                   
+                    # 병합 실행 버튼
+                    if st.button("중복 대회 병합 실행", key="execute_merge"):                   
+                        merged_count = merge_duplicate_tournaments()
+                        if merged_count > 0:
+                            st.success(f"{merged_count}개 중복 대회를 성공적으로 병합했습니다.")
+                            st.rerun()  # 페이지 새로고침
+                        else:
+                            st.error("병합 중 오류가 발생했습니다.")
 
 def main():
 
