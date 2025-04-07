@@ -33,7 +33,7 @@ st.markdown("""
     <h1 style="font-size: 1.0rem; font-weight: 300; color: #88c893; text-align: right;">ver2.0</h1>
 """, unsafe_allow_html=True)
 
-st.write("한양대학교 92 도시공학과 골프동호회 스코어 관리")
+st.markdown("<p style='margin-bottom: 20px;'>한양대학교 92 도시공학과 골프동호회 스코어 관리</p>", unsafe_allow_html=True)
 
 # 모바일 웹 앱 메타데이터 추가
 st.markdown("""
@@ -58,7 +58,9 @@ elif platform.system() == 'Linux':
     pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
 
 # 데이터베이스 파일 경로 설정
-DB_PATH = "golf_scores.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__)) if '__file__' in globals() else os.getcwd()
+DB_PATH = os.path.join(BASE_DIR, "golf_scores.db")
+# print(f"사용하는 DB 파일 경로: {DB_PATH}")
 
 # 디버그 모드 설정
 debug_mode = False
@@ -200,12 +202,32 @@ def add_mobile_css():
 # 데이터베이스 연결 관리 컨텍스트 매니저
 @contextmanager
 def get_db_connection():
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row  # 결과를 딕셔너리 형태로 반환
+    """데이터베이스 연결 관리 컨텍스트 매니저"""
+
+    # 디버깅용 - DB 파일 경로 확인
+    abs_path = os.path.abspath(DB_PATH)
+    # print(f"DB 연결 시도: {abs_path}")
+    
+    conn = None
     try:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row  # 결과를 딕셔너리 형태로 반환
         yield conn
+    except Exception as e:
+        print(f"DB 연결 오류: {e}")
+        if conn:
+            conn.rollback()
+        raise
     finally:
-        conn.close()
+        if conn:
+            try:
+                conn.commit()  # 명시적 커밋 추가
+                print("DB 연결 종료 시 커밋")
+            except Exception as e:
+                print(f"DB 커밋 오류: {e}")
+                conn.rollback()
+            finally:
+                conn.close()
 
 # 데이터베이스 초기화 함수
 def init_database():
@@ -321,9 +343,8 @@ def save_tournament_info(tournament_round, golf_location="", tournament_date=Non
             # 이미 존재하는 동일한 라운드 정보 확인
             cursor = conn.execute('''
             SELECT id FROM tournaments 
-            WHERE tournament_round = ? AND location = ?
-            ORDER BY date DESC
-            ''', (tournament_round, golf_location))   
+            WHERE tournament_round = ?
+            ''', (tournament_round,))    
             
             existing = cursor.fetchone()
             
@@ -334,9 +355,9 @@ def save_tournament_info(tournament_round, golf_location="", tournament_date=Non
                 # 날짜 다른 경우 날짜 업데이트
                 conn.execute('''
                 UPDATE tournaments 
-                SET date = ?
+                SET location = ?, date = ?
                 WHERE id = ?
-                ''', (tournament_date, existing['id']))
+                ''', (golf_location, tournament_date, existing['id']))
                 conn.commit()
             else:
                 # 새 항목 추가
@@ -452,22 +473,47 @@ def load_players_from_db():
 # 선수 ID 가져오기 또는 생성
 def get_or_create_player_id(player_name):
     """선수 이름으로 ID를 조회하거나 없으면 새로 생성"""
-    with get_db_connection() as conn:
-        cursor = conn.execute('SELECT id FROM players WHERE name = ?', (player_name,))
-        player = cursor.fetchone()
-        
-        if player:
-            return player['id']
-        else:
-            cursor = conn.execute('INSERT INTO players (name) VALUES (?)', (player_name,))
-            conn.commit()
-            return cursor.lastrowid
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.execute('SELECT id FROM players WHERE name = ?', (player_name,))
+            player = cursor.fetchone()
+            
+            if player:
+                return player['id']
+            else:
+                cursor = conn.execute('INSERT INTO players (name) VALUES (?)', (player_name,))
+                conn.commit()
+                return cursor.lastrowid
+    except Exception as e:
+        print(f"선수 ID 조회/생성 오류: {e}")
+        import traceback
+        print(traceback.format_exc())
+        return None
 
 # 대회 스코어 저장
 def save_tournament_scores(tournament_id, players_data):
     """대회 스코어를 DB에 저장"""
     try:
+        if not tournament_id:
+            print("대회 ID가 없습니다!")
+            return False
+            
+        if not players_data or len(players_data) == 0:
+            print("저장할 선수 데이터가 없습니다!")
+            return False
+            
+        print(f"저장 시도: 대회 ID {tournament_id}, 선수 수 {len(players_data)}")
+
+        # 데이터 구조 확인
+        for i, player in enumerate(players_data):
+            if '이름' not in player:
+                print(f"선수 데이터 {i+1}에 '이름' 필드가 없습니다!")
+                return False
+         
         with get_db_connection() as conn:
+            # 디버깅을 위한 로그 추가
+            print(f"저장 시도: 대회 ID {tournament_id}, 선수 수 {len(players_data)}")
+           
             for player in players_data:
                 player_name = player.get('이름')
                 if not player_name:
@@ -475,7 +521,12 @@ def save_tournament_scores(tournament_id, players_data):
                 
                 # 선수 ID 확인/생성
                 player_id = get_or_create_player_id(player_name)
+                print(f"선수 {player_name}의 ID: {player_id}")
                 
+                if player_id is None:
+                    print(f"선수 {player_name}의 ID를 생성할 수 없습니다!")
+                    continue
+              
                 # 기존 스코어 확인
                 cursor = conn.execute('''
                 SELECT id FROM tournament_scores 
@@ -486,43 +537,55 @@ def save_tournament_scores(tournament_id, players_data):
                 
                 front_nine = player.get('전반', 0)
                 back_nine = player.get('후반', 0)
-                total_score = player.get('최종스코어', front_nine + back_nine)
-                handicap = player.get('핸디캡', 0)
-                net_score = total_score - handicap
-                
-                if existing:
-                    # 업데이트
-                    conn.execute('''
-                    UPDATE tournament_scores 
-                    SET front_nine = ?, back_nine = ?, total_score = ?, 
-                        handicap = ?, net_score = ?
-                    WHERE id = ?
-                    ''', (front_nine, back_nine, total_score, handicap, net_score, existing['id']))
-                    score_id = existing['id']
-                else:
-                    # 새 기록 추가
-                    cursor = conn.execute('''
-                    INSERT INTO tournament_scores 
-                    (tournament_id, player_id, front_nine, back_nine, total_score, handicap, net_score)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
-                    ''', (tournament_id, player_id, front_nine, back_nine, 
-                          total_score, handicap, net_score))
-                    score_id = cursor.lastrowid
-                
+                total_score = player.get('총스코어', front_nine + back_nine)
+              
+                try:    
+                    if existing:
+                        # 업데이트
+                        conn.execute('''
+                        UPDATE tournament_scores 
+                        SET front_nine = ?, back_nine = ?, total_score = ?
+                        WHERE id = ?
+                        ''', (front_nine, back_nine, total_score, existing['id']))
+                        score_id = existing['id']
+                        print(f"기존 스코어 업데이트: {player_name}, ID: {score_id}")
+                    else:
+                        # 새 기록 추가
+                        cursor = conn.execute('''
+                        INSERT INTO tournament_scores 
+                        (tournament_id, player_id, front_nine, back_nine, total_score)
+                        VALUES (?, ?, ?, ?, ?)
+                        ''', (tournament_id, player_id, front_nine, back_nine, 
+                            total_score))
+                        score_id = cursor.lastrowid
+                        print(f"새 스코어 추가: {player_name}, ID: {score_id}")
+
+                except Exception as e:
+                    print(f"선수 {player_name} 스코어 저장 중 오류: {e}")
+                    import traceback
+                    print(traceback.format_exc())
+                    continue
+
                 # 홀별 스코어가 있으면 저장
                 if 'hole_scores' in player:
-                    # 기존 홀 스코어 삭제
-                    conn.execute('DELETE FROM hole_scores WHERE tournament_score_id = ?', (score_id,))
-                    
-                    # 새 홀 스코어 추가
-                    for hole_num, score in enumerate(player['hole_scores'], 1):
-                        conn.execute('''
-                        INSERT INTO hole_scores (tournament_score_id, hole_number, score)
-                        VALUES (?, ?, ?)
-                        ''', (score_id, hole_num, score))
-            
+                    try:
+                        # 기존 홀 스코어 삭제
+                        conn.execute('DELETE FROM hole_scores WHERE tournament_score_id = ?', (score_id,))
+                        
+                        # 새 홀 스코어 추가
+                        for hole_num, score in enumerate(player['hole_scores'], 1):
+                            conn.execute('''
+                            INSERT INTO hole_scores (tournament_score_id, hole_number, score)
+                            VALUES (?, ?, ?)
+                            ''', (score_id, hole_num, score))
+                            
+                    except Exception as e:
+                        print(f"홀 스코어 저장 중 오류: {e}")
+                        continue
+                
             conn.commit()
-        return True
+            print(f"총 {len(players_data)}개 선수 데이터 저장 후 커밋 완료")
+            return True
     except Exception as e:
         st.error(f"대회 스코어 저장 오류: {e}")
         import traceback
@@ -611,15 +674,22 @@ def get_player_tournament_history(player_id):
             
             history = []
             for row in cursor.fetchall():
+              # 핸디캡 값을 정수로 변환하여 통일된 형식으로 표시
+                handicap = row['handicap'] if row['handicap'] is not None else 0
+                try:
+                    handicap = round(float(handicap))  # 반올림하여 정수로 변환
+                except (ValueError, TypeError):
+                    handicap = 0
+
                 history.append({
-                    '날짜': row['date'],
-                    '대회': row['tournament_round'],
-                    '장소': row['location'],
-                    '전반': row['front_nine'],
-                    '후반': row['back_nine'],
-                    '최종스코어': row['total_score'],
-                    '핸디캡': row['handicap'],
-                    '네트점수': row['net_score']
+                '날짜': row['date'],
+                '대회': row['tournament_round'],
+                '장소': row['location'],
+                '전반': row['front_nine'],
+                '후반': row['back_nine'],
+                '총스코어': row['total_score'],
+                # '핸디캡': handicap
+                # '네트점수': row['net_score']
                 })
             
             return history
@@ -632,12 +702,19 @@ def get_all_tournaments():
     """모든 대회 목록 조회"""
     try:
         with get_db_connection() as conn:
+            # DISTINCT를 사용하거나 GROUP BY로 중복 제거
             cursor = conn.execute('''
-            SELECT id, tournament_round, location, date
-            FROM tournaments
-            ORDER BY id DESC
+            SELECT t1.id, t1.tournament_round, t1.location, t1.date
+            FROM tournaments t1
+            JOIN (
+                SELECT tournament_round, MAX(date) as max_date
+                FROM tournaments
+                GROUP BY tournament_round
+            ) t2
+            ON t1.tournament_round = t2.tournament_round AND t1.date = t2.max_date
+            ORDER BY t1.id DESC
             ''')
-            
+          
             tournaments = []
             for row in cursor.fetchall():
                 tournaments.append({
@@ -660,8 +737,7 @@ def get_tournament_results(tournament_id):
             cursor = conn.execute('''
             SELECT 
                 p.name, 
-                ts.front_nine, ts.back_nine, ts.total_score, 
-                ts.handicap, ts.net_score
+                ts.front_nine, ts.back_nine, ts.total_score                 
             FROM tournament_scores ts
             JOIN players p ON ts.player_id = p.id
             WHERE ts.tournament_id = ?
@@ -675,9 +751,7 @@ def get_tournament_results(tournament_id):
                     '이름': row['name'],
                     '전반': row['front_nine'],
                     '후반': row['back_nine'],
-                    '최종스코어': row['total_score'],
-                    '핸디캡': row['handicap'],
-                    '네트점수': row['net_score']
+                    '총스코어': row['total_score'],
                 })
             
             return results
@@ -997,7 +1071,7 @@ def parse_golf_specific_patterns(text, ignore_keywords=None, use_player_whitelis
                 '이름': player_name,
                 '전반': front_nine,
                 '후반': back_nine,
-                '최종스코어': total_score,
+                '총스코어': total_score,
                 '홀별스코어': hole_scores
             })
             
@@ -1027,7 +1101,7 @@ def parse_golf_specific_patterns(text, ignore_keywords=None, use_player_whitelis
                 '이름': player_name,
                 '전반': front_nine,
                 '후반': back_nine,
-                '최종스코어': total_score
+                '총스코어': total_score
             })
             continue
     
@@ -1039,7 +1113,7 @@ def parse_golf_specific_patterns(text, ignore_keywords=None, use_player_whitelis
     # 원본에서 파싱된 선수 이름이 없으면 이름만 추출해서 리스트 생성
     if not formatted_scores and players_data:
         for player in players_data:
-            formatted_scores.append(f"{player['이름']}  {player['최종스코어']}")
+            formatted_scores.append(f"{player['이름']}  {player['총스코어']}")
     
     return players_data, '\n'.join(formatted_scores)
 
@@ -1103,7 +1177,7 @@ def direct_score_extraction(text, ignore_keywords=None, use_player_whitelist=Fal
                 '이름': player_name,
                 '전반': front_nine_total,
                 '후반': back_nine_total,
-                '최종스코어': front_nine_total + back_nine_total,
+                '총스코어': front_nine_total + back_nine_total,
                 '홀별스코어': scores
             })
     
@@ -1132,7 +1206,7 @@ def direct_score_extraction(text, ignore_keywords=None, use_player_whitelist=Fal
                         '이름': player_name,
                         '전반': front_nine_total,
                         '후반': back_nine_total,
-                        '최종스코어': total_score
+                        '총스코어': total_score
                     })
     
     return players_data, '\n'.join(formatted_lines)
@@ -1175,17 +1249,17 @@ def direct_parse_from_image(image):
     # 이미지에서 보이는 데이터를 하드코딩한 결과 반환
     # 실제 이미지 분석이 실패할 경우 대비용
     hard_coded_data = [
-        {"이름": "김경호", "전반": 40, "후반": 42, "최종스코어": 82},
-        {"이름": "김병규", "전반": 46, "후반": 39, "최종스코어": 85},
-        {"이름": "김동준", "전반": 44, "후반": 43, "최종스코어": 87},
-        {"이름": "박은오", "전반": 45, "후반": 44, "최종스코어": 89},
-        {"이름": "윤성웅", "전반": 46, "후반": 43, "최종스코어": 89},
-        {"이름": "김도한", "전반": 48, "후반": 43, "최종스코어": 91},
-        {"이름": "박재영", "전반": 51, "후반": 42, "최종스코어": 93},
-        {"이름": "박종호", "전반": 50, "후반": 51, "최종스코어": 101},
-        {"이름": "박창서", "전반": 52, "후반": 50, "최종스코어": 102},
-        {"이름": "강상민", "전반": 53, "후반": 50, "최종스코어": 103},
-        {"이름": "홍경택", "전반": 54, "후반": 51, "최종스코어": 105}
+        {"이름": "김경호", "전반": 40, "후반": 42, "총스코어": 82},
+        {"이름": "김병규", "전반": 46, "후반": 39, "총스코어": 85},
+        {"이름": "김동준", "전반": 44, "후반": 43, "총스코어": 87},
+        {"이름": "박은오", "전반": 45, "후반": 44, "총스코어": 89},
+        {"이름": "윤성웅", "전반": 46, "후반": 43, "총스코어": 89},
+        {"이름": "김도한", "전반": 48, "후반": 43, "총스코어": 91},
+        {"이름": "박재영", "전반": 51, "후반": 42, "총스코어": 93},
+        {"이름": "박종호", "전반": 50, "후반": 51, "총스코어": 101},
+        {"이름": "박창서", "전반": 52, "후반": 50, "총스코어": 102},
+        {"이름": "강상민", "전반": 53, "후반": 50, "총스코어": 103},
+        {"이름": "홍경택", "전반": 54, "후반": 51, "총스코어": 105}
     ]
     
     return hard_coded_data
@@ -1377,7 +1451,7 @@ def parse_golf_scores_table(image, use_improved_pipeline=False):
                 '이름': player,
                 '전반': front,
                 '후반': back,
-                '최종스코어': total
+                '총스코어': total
             })
         
         # 선수 데이터가 없으면 대체 방법 사용
@@ -1416,7 +1490,7 @@ def identify_front_back_scores(players_data):
     for name, entries in player_groups.items():
         if len(entries) == 1:
             # 한 번만 나온 경우 전체 스코어를 반으로 나눠 추정
-            total = entries[0]['합계'] if '합계' in entries[0] else entries[0].get('최종스코어', 0)
+            total = entries[0]['합계'] if '합계' in entries[0] else entries[0].get('총스코어', 0)
             front = total // 2
             back = total - front
             
@@ -1424,21 +1498,21 @@ def identify_front_back_scores(players_data):
                 '이름': name,
                 '전반': front,
                 '후반': back,
-                '최종스코어': total
+                '총스코어': total
             })
         elif len(entries) >= 2:
             # 두 번 이상 나온 경우 (전반/후반)
             # 스코어 합계가 작은 것을 전반, 큰 것을 후반으로 가정
-            entries.sort(key=lambda x: x.get('합계', 0) if '합계' in x else x.get('최종스코어', 0))
+            entries.sort(key=lambda x: x.get('합계', 0) if '합계' in x else x.get('총스코어', 0))
             
-            front = entries[0].get('합계', 0) if '합계' in entries[0] else entries[0].get('최종스코어', 0)
-            back = entries[1].get('합계', 0) if '합계' in entries[1] else entries[1].get('최종스코어', 0)
+            front = entries[0].get('합계', 0) if '합계' in entries[0] else entries[0].get('총스코어', 0)
+            back = entries[1].get('합계', 0) if '합계' in entries[1] else entries[1].get('총스코어', 0)
             
             result.append({
                 '이름': name,
                 '전반': front,
                 '후반': back,
-                '최종스코어': front + back
+                '총스코어': front + back
             })
     
     return result
@@ -1537,11 +1611,11 @@ def analyze_scores_from_text(text, ignore_keywords=None, use_player_whitelist=Fa
                 '이름': player_name,
                 '전반': front_score,
                 '후반': back_score,
-                '최종스코어': total_score
+                '총스코어': total_score
             })
             continue
         
-        # 패턴 2: "선수이름 최종스코어" 형식 (예: "박재영 78")
+        # 패턴 2: "선수이름 총스코어" 형식 (예: "박재영 78")
         match = re.search(r'([가-힣A-Za-z0-9#]+)\s+(\d+)$', line)
         if match:
             player_name = match.group(1).strip()
@@ -1569,7 +1643,7 @@ def analyze_scores_from_text(text, ignore_keywords=None, use_player_whitelist=Fa
                 '이름': player_name,
                 '전반': front,
                 '후반': back,
-                '최종스코어': total_score
+                '총스코어': total_score
             })
             continue
     
@@ -1657,55 +1731,208 @@ def process_golf_image(image_cv, psm_option=6, preprocessing_option="보통", us
         return []
 
 def simplified_manual_input(saved_players):
-    """간편 수동 입력 - 선수별 최종 스코어만 입력 (모바일 최적화 버전)"""
+    """간편 수동 입력 - 선수별 총스코어만 입력 (테이블 형태 UI)"""
     
     manual_data = []
+    is_submitted = False
     
-    # 컬럼 설정
-    col1, col2 = st.columns([3, 2])
+    # 스타일링을 위한 CSS 추가
+    st.markdown("""
+    <style>
+    .score-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    .score-table th, .score-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid #ddd;
+    }
+    .score-table th {
+        background-color: #f2f2f2;
+        text-align: left;
+        font-weight: bold;
+    }
+    .score-table tr:hover {
+        background-color: #f5f5f5;
+    }
+    </style>
+    """, unsafe_allow_html=True)
     
-    with col1:
-        st.write("선수명")
-    with col2:
-        st.write("최종 스코어")
-    
-    # 각 선수별 입력 필드 생성
-    for i, player in enumerate(saved_players):
+    # 폼 컨텍스트로 감싸기
+    with st.form(key="manual_input_form"):
+        # 컬럼 헤더 표시
+        st.markdown('<div class="score-table-header">', unsafe_allow_html=True)
+        col1, col2 = st.columns([3, 2])
         with col1:
-            st.write(player['이름'])
+            st.markdown('<strong>선수명</strong>', unsafe_allow_html=True)
         with col2:
+            st.markdown('<strong>총스코어</strong>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # 구분선 추가
+        st.markdown('<hr style="margin: 0; border-top: 2px solid #ccc;">', unsafe_allow_html=True)
+        
+        # 각 선수별 행 생성
+        for i, player in enumerate(saved_players):
+            player_name = player.get('이름', f"선수 {i+1}")
+            
             # 기본값 설정 (이전 전반+후반 또는 기본값 72)
             try:
                 default_front = int(player.get('전반', 36))
                 default_back = int(player.get('후반', 36))
                 default_total = default_front + default_back
-            except:
+            except (ValueError, TypeError):
                 default_total = 72
-                
-            total_score = st.number_input(f"", min_value=60, max_value=150, value=default_total, key=f"simple_total_{i}")
-        
-        # 전반/후반 자동 계산 (총점을 2로 나누어)
-        front_nine = total_score // 2
-        back_nine = total_score - front_nine
-        
-        # 핸디캡 가져오기 (있는 경우)
-        try:
-            handicap = int(player.get('핸디캡', 0))
-        except:
-            handicap = 0
             
-        net_score = total_score - handicap
+            # 컬럼으로 선수명과 스코어 입력 필드 배치
+            col1, col2 = st.columns([3, 2])
+            
+            with col1:
+                st.markdown(f"<strong>{player_name}</strong>", unsafe_allow_html=True)
+            
+            with col2:
+                total_score = st.number_input(
+                    f"",  # 라벨 비워두기
+                    min_value=0, 
+                    max_value=150, 
+                    value=int(default_total),
+                    key=f"simple_total_{i}"
+                )
+            
+            # 구분선 추가
+            st.markdown('<hr style="margin: 5px 0; border-top: 1px solid #eee;">', unsafe_allow_html=True)
+
+            # 전반/후반 자동 계산
+            front_nine = total_score // 2
+            back_nine = total_score - front_nine
+             
+            # 데이터 저장
+            manual_data.append({
+                '이름': player_name,
+                '전반': front_nine,
+                '후반': back_nine,
+                '총스코어': total_score,
+            })
         
-        manual_data.append({
-            '이름': player['이름'],
-            '전반': front_nine,
-            '후반': back_nine,
-            '최종스코어': total_score,
-            '핸디캡': handicap,
-            '네트점수': net_score
-        })
+        # 스코어 계산 버튼 추가 - 시각적으로 강조
+        st.markdown('<div style="margin-top: 20px;">', unsafe_allow_html=True)
+        submit_button = st.form_submit_button(
+            label="스코어 계산",
+            use_container_width=True,
+            type="primary"
+        )
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        if submit_button:
+            is_submitted = True
+            return manual_data, is_submitted
     
-    return manual_data
+    return manual_data, is_submitted
+
+def simplified_manual_input_mobile(saved_players):
+    """간편 수동 입력 - 선수별 총스코어만 입력 (테이블 형태 UI)"""
+    
+    manual_data = []
+    is_submitted = False
+    
+    # 모바일 최적화 CSS 추가
+    st.markdown("""
+    <style>
+    @media (max-width: 768px) {
+        .mobile-score-row {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .player-name {
+            flex: 3;
+            font-weight: bold;
+        }
+        .score-input {
+            flex: 2;
+        }
+        .stNumberInput > div {
+            width: 100% !important;
+        }
+        input[type="number"] {
+            height: 40px !important;
+            font-size: 16px !important;
+        }
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    # 폼 컨텍스트로 감싸기
+    with st.form(key="manual_input_form"):
+        # 컬럼 헤더 표시
+        # st.markdown('<div class="score-table-header">', unsafe_allow_html=True)
+        col1, col2 = st.columns([3, 2])
+        with col1:
+            st.markdown('<strong>선수명</strong>', unsafe_allow_html=True)
+        with col2:
+            st.markdown('<strong>총스코어</strong>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # 구분선 추가
+        st.markdown('<hr>', unsafe_allow_html=True)
+             
+        # 각 선수별 행 생성
+        for i, player in enumerate(saved_players):
+            player_name = player.get('이름', f"선수 {i+1}")
+            
+            # 기본값 설정 (이전 전반+후반 또는 기본값 72)
+            try:
+                default_front = int(player.get('전반', 36))
+                default_back = int(player.get('후반', 36))
+                default_total = default_front + default_back
+            except (ValueError, TypeError):
+                default_total = 72
+            
+            # 컬럼으로 선수명과 스코어 입력 필드 배치
+            col1, col2 = st.columns([3, 2])
+            
+            with col1:
+                st.markdown(f"<div class='player-name'>{player_name}</div>", unsafe_allow_html=True)
+            
+            with col2:
+                total_score = st.number_input(
+                    f"",  # 라벨 비워두기
+                    min_value=0, 
+                    max_value=150, 
+                    value=int(default_total),
+                    key=f"mobile_score_{i}",
+                    help=f"{player_name}의 총스코어"
+                )
+            
+            # 전반/후반 자동 계산
+            front_nine = total_score // 2
+            back_nine = total_score - front_nine
+            
+            # 데이터 저장
+            manual_data.append({
+                '이름': player_name,
+                '전반': front_nine,
+                '후반': back_nine,
+                '총스코어': total_score,
+            })
+
+      
+        # 제출 버튼 추가 - 시각적으로 강조
+        st.markdown('<div style="margin-top: 20px;">', unsafe_allow_html=True)
+        submit_button = st.form_submit_button(
+            label="스코어 계산",
+            use_container_width=True,
+            type="primary"
+        )
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        if submit_button:
+            is_submitted = True
+            return manual_data, is_submitted
+    
+    return manual_data, is_submitted
 
 def enhance_text_parsing(text):
     """추출된 텍스트 후처리 및 정규화 - 선수이름||홀별스코어 형식으로 변환"""
@@ -1807,7 +2034,7 @@ def mobile_manual_input():
     player_data = []
     
     # 모바일에서 간편하게 입력할 수 있는 UI
-    st.write("📝 각 선수의 최종 스코어를 입력하세요")
+    st.write("📝 각 선수의 총스코어를 입력하세요")
     
     # 선수 5명씩 그룹화하여 표시 (모바일에서 보기 좋게)
     players_per_page = 5
@@ -1831,7 +2058,7 @@ def mobile_manual_input():
                 default_total = default_front + default_back
                     
                 total_score = st.number_input("", 
-                                            min_value=60, 
+                                            min_value=0, 
                                             max_value=150, 
                                             value=default_total, 
                                             key=f"score_{page_index}_{i}")
@@ -1845,7 +2072,7 @@ def mobile_manual_input():
                 '이름': player['이름'],
                 '전반': front_nine,
                 '후반': back_nine,
-                '최종스코어': total_score
+                '총스코어': total_score
             })
         
         # 다른 페이지의 선수들도 기본값으로 추가
@@ -1859,7 +2086,7 @@ def mobile_manual_input():
                         '이름': p['이름'],
                         '전반': front,
                         '후반': back,
-                        '최종스코어': front + back
+                        '총스코어': front + back
                     })
     else:
         st.warning("선수 명단이 없습니다.")
@@ -2050,7 +2277,7 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
     # 입력 모드 선택
     input_mode = st.radio(
         "입력 방식 선택",
-        ["총 스코어 입력", "전반/후반 분리 입력"],
+        ["총스코어 입력", "전반/후반 분리 입력"],
         horizontal=True,
         key="input_mode_radio"
     )
@@ -2059,7 +2286,7 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
     player_data = []
         
     # 컬럼 구성
-    if input_mode == "총 스코어 입력":
+    if input_mode == "총스코어 입력":
         for i in range(players_count):
             st.write(f"선수 {i+1}")
             col1, col2 = st.columns(2)
@@ -2079,7 +2306,7 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
                 except Exception as e:
                     st.error(f"선수 {i+1} 데이터 불러오기 오류: {e}")
 
-            # 한 줄에 선수 이름과 총 스코어 필드를 나란히 배치
+            # 한 줄에 선수 이름과 총스코어 필드를 나란히 배치
             col1, col2 = st.columns([1, 1])
 
             with col1:
@@ -2087,7 +2314,7 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
             
             with col2:
                 total_score = st.number_input(
-                    f"총 스코어", 
+                    f"총스코어", 
                     value=int(default_total), 
                     min_value=0, 
                     max_value=150, 
@@ -2104,7 +2331,7 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
                 '이름': name,
                 '전반': front_nine,
                 '후반': back_nine,
-                '최종스코어': total_score,
+                '총스코어': total_score,
                 # '네트점수': net_score
             })
     else:
@@ -2157,7 +2384,7 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
                 '이름': name,
                 '전반': front_nine,
                 '후반': back_nine,
-                '최종스코어': final_score
+                '총스코어': final_score
             })
         
     # 현재 선수 명단 저장 옵션
@@ -2183,7 +2410,7 @@ def manual_parse_scores(tournament_round=None, golf_location=None, tournament_da
             # 세션 상태에 저장
             st.session_state.saved_players = players_to_save
         
-            # 파일에 저장
+            # db에 저장
             save_players_to_db(players_to_save)
             # st.success(f"선수 명단 {len(players_to_save)}명이 저장되었습니다.")
         
@@ -2313,7 +2540,7 @@ def display_player_records():
 
 def display_medal_list(players_data, tournament_round, golf_location, ignore_keywords, use_player_whitelist, player_names, tournament_date):
     """메달리스트 순위 표시 - 핸디캡 적용 및 HOLE/PAR 필터링, 동일 스코어는 같은 등수
-    최종 스코어만 표시하도록 수정 및 UI 개선"""
+    총스코어만 표시하도록 수정 및 UI 개선"""
 
     import pandas as pd
     import streamlit as st
@@ -2350,9 +2577,9 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
         if use_player_whitelist and player_names and '이름' in p:
             is_valid = p['이름'] in player_names
         
-        # 최종스코어 60 이하 제외 - 이 부분 추가
+        # 총스코어 60 이하 제외 - 이 부분 추가
         score_too_low = False
-        if '최종스코어' in p and p['최종스코어'] <= 60:
+        if '총스코어' in p and p['총스코어'] <= 60:
             score_too_low = True
         
         # 모든 조건 충족 시에만 추가
@@ -2401,9 +2628,9 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
                 player['핸디캡'] = 0
                 
             # # 네트 스코어 계산 (핸디캡 적용)
-            # if '최종스코어' in player:
+            # if '총스코어' in player:
             #     handicap_value = player.get('핸디캡', 0) or 0  # None인 경우 0으로 처리
-            #     player['네트점수'] = player['최종스코어'] - handicap_value
+            #     player['네트점수'] = player['총스코어'] - handicap_value
                    
             # 전회 대회 기록 가져오기 - compare_with_previous_tournament 함수 활용
             try:
@@ -2441,7 +2668,7 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
                             
                             if prev_tournament:
                                 player['전회스코어'] = prev_tournament['total_score']
-                                player['스코어차이'] = player['최종스코어'] - player['전회스코어']
+                                player['스코어차이'] = player['총스코어'] - player['전회스코어']
                             else:
                                 player['전회스코어'] = 0
                                 player['스코어차이'] = 0
@@ -2471,9 +2698,9 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
                     st.write("이전 대회 조회 결과: None")
 
 
-    # 최종스코어 기준 정렬 (요구사항 3: 최종스코어순으로 정렬)
-    sorted_data = sorted(players_data, key=lambda x: x.get('최종스코어', 999))
-    score_key = '최종스코어'
+    # 총스코어 기준 정렬 (요구사항 3: 총스코어순으로 정렬)
+    sorted_data = sorted(players_data, key=lambda x: x.get('총스코어', 999))
+    score_key = '총스코어'
    
     # 등수 계산 로직 수정 - 동점자 처리 개선
     ranks = {}
@@ -2553,8 +2780,8 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
             st.markdown(f"""
             <div class="winner-box">
                 <h3>🏆 우승자: {winner['이름']}</h3>
-                <p>최종 스코어: {winner['최종스코어']}타</p>
-                <p>전회 대비: {winner['스코어차이']}타 ({winner['전회스코어']} → {winner['최종스코어']})</p>
+                <p>총스코어: {winner['총스코어']}타</p>
+                <p>전회 대비: {winner['스코어차이']}타 ({winner['전회스코어']} → {winner['총스코어']})</p>
             </div>
             """, unsafe_allow_html=True)
         else:
@@ -2563,7 +2790,7 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
     # 메달리스트 (1등) 표시 - 간단하게
     if sorted_data:
         medallist = sorted_data[0]
-        st.success(f"🏆 메달리스트: {medallist['이름']} - {medallist['최종스코어']}타")
+        st.success(f"🏆 메달리스트: {medallist['이름']} - {medallist['총스코어']}타")
     
     # 전체 순위 테이블 데이터 준비
     table_data = []
@@ -2571,7 +2798,7 @@ def display_medal_list(players_data, tournament_round, golf_location, ignore_key
         try:
             rank = ranks.get(i, i+1)
             name = player.get('이름', '')
-            final_score = int(player.get('최종스코어', 0) or 0)
+            final_score = int(player.get('총스코어', 0) or 0)
             handicap = round(float(player.get('핸디캡', 0) or 0), 1)
             avg_score = round(float(player.get('평균스코어', 0) or 0), 1)
             prev_score = int(player.get('전회스코어', 0) or 0)
@@ -2914,26 +3141,103 @@ def display_score_calculation_page():
                                         ignore_keywords, use_player_whitelist, player_names, tournament_date)
 
                     else:
-                        st.error("스코어 데이터를 인식하지 못했습니다.")
+                        # st.error("스코어 데이터를 인식하지 못했습니다.")
                         st.info("이미지 회전이나 전처리 옵션을 조정하거나, 수동 입력을 사용해보세요.")
                         
                         # 인식 실패 시 간편 수동 입력 폼 표시
                         try:
-                            st.subheader("간편 수동 입력")
-                            saved_players = st.session_state.get('saved_players', load_players_from_db())
-                    
-                            manual_data = simplified_manual_input(st.session_state.saved_players)
+                            st.subheader("🖋️ 간편 수동 입력")
                             
-                            if st.button("수동 입력 계산", key="manual_calc_button"):
-                                display_medal_list(manual_data, tournament_round, golf_location, 
-                                                ignore_keywords, use_player_whitelist, player_names, tournament_date)
+                            # 선수 명단 불러오기
+                            saved_players = st.session_state.get('saved_players')
+                            if not saved_players:
+                                saved_players = load_players_from_db()
+                                st.session_state.saved_players = saved_players
+                            
+                            # 모바일 환경 감지
+                            is_mobile = get_device_info().get('is_mobile', False)
+                            
+                            # 기기에 맞는 입력 폼 표시
+                            if is_mobile:
+                                manual_data, is_submitted = simplified_manual_input_mobile(saved_players)
+                                st.write(manual_data, is_submitted)
+                            else:
+                                manual_data, is_submitted = simplified_manual_input(saved_players)
+                                st.write(manual_data, is_submitted)
+
+
+                            # 폼이 제출된 경우에만 결과 표시
+                            if is_submitted and manual_data and len(manual_data) > 0:
+                                # 디버깅 정보 출력
+                                st.write(f"입력된 선수 수: {len(manual_data)}")
+
+                                # 데이터 유효성 검사 추가
+                                valid_data = True
+                                for player in manual_data:
+                                    if '이름' not in player or not player['이름']:
+                                        st.error("선수 이름이 없는 데이터가 있습니다.")
+                                        valid_data = False
+                                        break
+         
+                                if valid_data:
+                                    # 대회 정보 저장
+                                    tournament_id = save_tournament_info(
+                                        tournament_round, golf_location, tournament_date
+                                    )
+                                
+                                    if not tournament_id:
+                                        st.error("대회 정보 저장에 실패했습니다!")
+                                    else:
+                                        st.success(f"대회 정보가 저장되었습니다. (ID: {tournament_id})")
+        
+                                        # 디버깅을 위한 데이터 확인
+                                        if st.checkbox("저장 시도할 선수 데이터 확인"):
+                                            st.write(manual_data)
+                
+                                        # 스코어 저장 전 데이터 구조 확인
+                                        for i, player in enumerate(manual_data):
+                                            if '전반' not in player or '후반' not in player or '총스코어' not in player:
+                                                # 데이터 구조 보완
+                                                total = player.get('총스코어', 0)
+                                                if '전반' not in player:
+                                                    player['전반'] = total // 2
+                                                if '후반' not in player:
+                                                    player['후반'] = total - player['전반']
+                                                if '총스코어' not in player:
+                                                    player['총스코어'] = player['전반'] + player['후반']
+                                        
+
+                                        # 스코어 저장
+                                        with st.spinner("스코어 계산 중..."):
+                                            try:
+                                                success = save_tournament_scores(tournament_id, manual_data)
+                                                if success:
+                                                    st.success("✅ 스코어가 성공적으로 저장되었습니다!")
+
+                                                    # 순위표 표시
+                                                    display_medal_list(manual_data, tournament_round, golf_location, 
+                                                                    None, False, None, tournament_date)
+                                                                                    
+                                                    # 세션 상태 업데이트
+                                                    st.session_state.manual_data = manual_data
+                                                    st.session_state.manual_calculation_done = True
+
+                                                else:
+                                                    st.error("❌ 스코어 저장에 실패했습니다!")
+
+                                                    # 실패 원인 확인을 위한 세부정보 표시
+                                                    st.error("save_tournament_scores 함수가 False를 반환했습니다.")
+
+                                            except Exception as e:
+                                                import traceback
+                                                st.error(f"스코어 저장 중 예외 발생: {str(e)}")
+                                                st.code(traceback.format_exc())
+
+
                         except Exception as e:
+                            import traceback
                             st.error(f"간편 수동 입력 중 오류 발생: {str(e)}")
-
-
-            # # 스코어 인식 버튼을 누르지 않았을 때의 안내 메시지       
-            # elif not st.session_state.recognition_initiated:
-            #     st.info("이미지가 업로드되었습니다. '스코어 인식' 버튼을 눌러 계속 진행하세요.")
+                            st.code(traceback.format_exc())
 
                 except Exception as e:
                     import traceback
@@ -2961,7 +3265,7 @@ def display_score_calculation_page():
                         }
                         # 대회일자가 포함된 정보로 순위 표시
                         display_medal_list(result, tournament_round, golf_location, None, False, None, tournament_date)
-                    
+                        
 
 def display_player_stats_page():
     """선수별 기록 페이지 표시"""
@@ -3096,7 +3400,7 @@ def display_player_stats_page():
                         tournament_df = tournament_df.sort_values(by="날짜", ascending=False)
 
                     st.markdown('<div class="tournament-table">', unsafe_allow_html=True)
-                    st.table(tournament_df)
+                    st.table(tournament_df.reset_index(drop=True))  #reset_index로 인덱스 리셋
                     st.markdown('</div>', unsafe_allow_html=True)
                 else:
                     st.info("아직 대회 기록이 없습니다.")
@@ -3493,7 +3797,7 @@ def merge_duplicate_tournaments():
             cursor = conn.execute('''
             SELECT tournament_round, COUNT(*) as count    
             FROM tournaments
-            GROUP BY tournament_round, location
+            GROUP BY tournament_round
             HAVING count > 1
         ''')
             
@@ -3502,7 +3806,6 @@ def merge_duplicate_tournaments():
             merged_count = 0
             for dup in duplicates:
                 tournament_round = dup['tournament_round']
-                # location = dup['location']
                 
                 # 해당 대회명를 가진 모든 대회 조회
                 cursor = conn.execute('''
@@ -3535,6 +3838,7 @@ def merge_duplicate_tournaments():
                         ''', (old_id,))
                         
                         merged_count += 1
+                        st.info(merged_count)
             
             conn.commit()
             return merged_count
@@ -3542,9 +3846,117 @@ def merge_duplicate_tournaments():
         st.error(f"대회 병합 오류: {e}")
         return 0
 
+def cleanup_duplicate_tournaments():
+    """앱 시작 시 중복 대회 자동 정리"""
+    try:
+        with get_db_connection() as conn:
+            # 중복 대회 찾기
+            cursor = conn.execute('''
+                SELECT tournament_round, COUNT(*) as count    
+                FROM tournaments
+                GROUP BY tournament_round
+                HAVING count > 1
+            ''')
+            
+            duplicates = cursor.fetchall()
+            merged_count = 0
+            
+            for dup in duplicates:
+                tournament_round = dup['tournament_round']
+                
+                # 해당 대회명의 모든 대회 ID 가져오기
+                cursor = conn.execute('''
+                    SELECT id, date
+                    FROM tournaments
+                    WHERE tournament_round = ?
+                    ORDER BY date DESC
+                ''', (tournament_round,))
+                
+                tournaments = cursor.fetchall()
+                
+                if len(tournaments) > 1:
+                    # 가장 최근 대회만 유지
+                    keep_id = tournaments[0]['id']
+                    
+                    for i in range(1, len(tournaments)):
+                        old_id = tournaments[i]['id']
+                        
+                        # 스코어 데이터 이전
+                        conn.execute('''
+                            UPDATE tournament_scores
+                            SET tournament_id = ?
+                            WHERE tournament_id = ?
+                        ''', (keep_id, old_id))
+                        
+                        # 중복 대회 삭제
+                        conn.execute('''
+                            DELETE FROM tournaments
+                            WHERE id = ?
+                        ''', (old_id,))
+                        
+                        merged_count += 1
+            
+            conn.commit()
+            
+            if merged_count > 0:
+                print(f"앱 시작 시 {merged_count}개의 중복 대회가 자동으로 정리되었습니다.")
+            
+            return merged_count
+    except Exception as e:
+        print(f"자동 정리 중 오류: {e}")
+        import traceback
+        print(traceback.format_exc())
+        return 0
+    
+def debug_tournament_ids():
+    """대회명별 ID 확인 디버깅 함수"""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.execute('''
+                SELECT tournament_round, COUNT(*) as count    
+                FROM tournaments
+                GROUP BY tournament_round
+            ''')
+            
+            tournaments = cursor.fetchall()
+            debug_info = []
+            
+            for t in tournaments:
+                round_name = t['tournament_round']
+                count = t['count']
+                
+                # 해당 대회명의 모든 ID 가져오기
+                cursor = conn.execute('''
+                    SELECT id, tournament_round, location, date
+                    FROM tournaments
+                    WHERE tournament_round = ?
+                    ORDER BY date DESC
+                ''', (round_name,))
+                
+                ids = [dict(row) for row in cursor.fetchall()]
+                
+                debug_info.append({
+                    "대회명": round_name,
+                    "ID 개수": count,
+                    "상세정보": ids
+                })
+            
+            return debug_info
+    except Exception as e:
+        return [{"오류": str(e)}]
+        
+
 def display_admin_page():
     """관리자 도구 페이지 표시"""
     st.title("관리자 도구")
+    
+    # DB 파일 정보 표시
+    st.write(f"DB 파일 경로: {os.path.abspath(DB_PATH)}")
+    
+    if os.path.exists(DB_PATH):
+        st.success(f"DB 파일 크기: {os.path.getsize(DB_PATH)/1024:.2f} KB")
+    else:
+        st.error("DB 파일이 존재하지 않습니다!")
     
     # 탭 추가
     tabs = st.tabs(["대회 관리", "선수 관리", "데이터베이스 관리", "중복대회 관리", "DB 상태 확인"])
@@ -3564,6 +3976,16 @@ def display_admin_page():
         # st.header("데이터베이스 관리")
         manage_database()
 
+        # 대회 ID 디버깅 섹션 추가
+        st.subheader("대회 ID 디버깅")
+        if st.button("대회 ID 확인"):
+            debug_info = debug_tournament_ids()
+            for item in debug_info:
+                st.write(f"대회명: {item['대회명']}, ID 개수: {item['ID 개수']}")
+                if item['ID 개수'] > 1:
+                    st.warning("중복 대회 발견!")
+                st.json(item['상세정보'])
+
     # 중복대회 병합 탭
     with tabs[3]:
         # st.header("중복대회 관리")
@@ -3574,9 +3996,9 @@ def display_admin_page():
             # 먼저 중복 대회 검사
             with get_db_connection() as conn:
                 cursor = conn.execute('''
-                    SELECT tournament_round, location, COUNT(*) as count    
+                    SELECT tournament_round, COUNT(*) as count    
                     FROM tournaments
-                    GROUP BY tournament_round, location
+                    GROUP BY tournament_round
                     HAVING count > 1
                 ''')
                 
@@ -3589,16 +4011,37 @@ def display_admin_page():
 
                     # 중복 목록 표시
                     for dup in duplicates:
+                        # 해당 대회명을 가진 모든 대회 정보 가져오기
+                        cursor2 = conn.execute('''
+                            SELECT id, tournament_round, location, date
+                            FROM tournaments
+                            WHERE tournament_round = ?
+                            ORDER BY date DESC
+                        ''', (dup['tournament_round'],))
+                        
+                        dups = cursor2.fetchall()
                         st.write(f"대회명: {dup['tournament_round']}, 중복 수: {dup['count']}개")
                    
-                    # 병합 실행 버튼
-                    if st.button("중복 대회 병합 실행", key="execute_merge"):                   
-                        merged_count = merge_duplicate_tournaments()
-                        if merged_count > 0:
-                            st.success(f"{merged_count}개 중복 대회를 성공적으로 병합했습니다.")
-                            st.rerun()  # 페이지 새로고침
-                        else:
-                            st.error("병합 중 오류가 발생했습니다.")
+                        # 중복된 대회 목록 테이블로 표시
+                        dup_data = []
+                        for d in dups:
+                            dup_data.append({
+                                "ID": d['id'],
+                                "대회명": d['tournament_round'],
+                                "장소": d['location'],
+                                "날짜": d['date']
+                            })
+                        
+                        st.dataframe(pd.DataFrame(dup_data))
+
+                        # 병합 실행 버튼
+                        if st.button("중복 대회 병합 실행", key="execute_merge"):                   
+                            merged_count = merge_duplicate_tournaments()
+                            if merged_count > 0:
+                                st.success(f"{merged_count}개 중복 대회를 성공적으로 병합했습니다.")
+                                st.rerun()  # 페이지 새로고침
+                            else:
+                                st.error("병합 중 오류가 발생했습니다.")
     # DB 상태 확인 탭 추가
     with tabs[4]:
         st.header("DB 상태 확인")
@@ -3619,9 +4062,12 @@ def display_admin_page():
 
 def main():
 
-   # 데이터베이스 초기화
+    # 데이터베이스 초기화
     init_database()
     
+    # 중복 대회 자동 정리
+    cleanup_duplicate_tournaments()
+
     # 세션 상태 초기화
     init_session_state()
 
